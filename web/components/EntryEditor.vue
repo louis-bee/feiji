@@ -1,0 +1,1 @@
+<template>entryeditor</template>

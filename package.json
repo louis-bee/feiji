@@ -1,0 +1,40 @@
+{
+  "name": "our-flight-log",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"tsx watch server/index.ts\" \"vite --host 127.0.0.1\"",
+    "dev:api": "tsx watch server/index.ts",
+    "dev:web": "vite --host 127.0.0.1",
+    "typecheck": "vue-tsc --noEmit",
+    "build": "pnpm run typecheck && vite build",
+    "start": "tsx server/index.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@fastify/multipart": "^10.1.2",
+    "@fastify/static": "^10.1.5",
+    "better-sqlite3": "^13.0.3",
+    "fastify": "^5.12.5",
+    "lucide-vue-next": "^0.468.0",
+    "vue": "^3.5.43",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.20.4",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "concurrently": "^9.2.1",
+    "prettier": "^3.6.2",
+    "tsx": "4.23.15",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.1",
+    "vue-tsc": "^3.3.11"
+  }
+}
