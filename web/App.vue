@@ -37,7 +37,7 @@ const links = [
   { to: "/", text: "首页", icon: House },
   { to: "/calendar", text: "日历", icon: CalendarDays },
   { to: "/album", text: "相册", icon: Images },
-  { to: "/anniversary", text: "纪念日", icon: Heart },
+  { to: "/anniversaries", text: "纪念日", icon: Heart },
 ];
 
 function reload() {
