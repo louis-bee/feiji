@@ -143,7 +143,7 @@ onUnmounted(() => {
                 month: "long",
                 day: "numeric",
                 weekday: "short",
-                timeZone: "state.settings.timezone",
+                timeZone: state.settings.timezone,
               }).format(clock)
             }}
           </span>
