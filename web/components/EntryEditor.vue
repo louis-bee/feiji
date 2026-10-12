@@ -1,1 +1,192 @@
-<template>entryeditor</template>
+<script setup lang="ts">
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { Check, ImagePlus, PenLine } from "lucide-vue-next";
+import Model from "../components/Model.vue";
+import UploadBox from "../components/UploadBox.vue";
+import MediaThumb from "../components/MediaThumb.vue";
+import { state, actor, notify, today } from "../store";
+import { api } from "../api";
+import type { Entry } from "../types";
+import { editorOpen, editorDate, editorEntry } from "../ui";
+
+const original = editorEntry.value;
+const date = ref(editorDate.value);
+const body = ref(original?.body || "");
+const mediaIds = ref<string[]>([...(original?.mediaIds || [])]);
+const selectedMedia = computed(() =>
+  mediaIds.value.flatMap((id) => {
+    const media = state.media.find((item) => item.id === id);
+    return media ? [media] : [];
+  }),
+);
+const saving = ref(false);
+const uploading = ref(false);
+const showLibrary = ref(false);
+const error = ref("");
+const dirty = computed(
+  () =>
+    date.value !== editorDate.value ||
+    body.value !== (original?.body || "") ||
+    mediaIds.value.join() !== (original?.mediaIds || []).join(),
+);
+function close() {
+  if (saving.value || uploading.value) return;
+  if (
+    dirty.value &&
+    !confirm("还有未保存的记录，确定离开吗？已上传的媒体会保留在相册里。")
+  )
+    return;
+  editorOpen.value = false;
+}
+function toggle(id: string) {
+  mediaIds.value = mediaIds.value.includes(id)
+    ? mediaIds.value.filter((value) => value !== id)
+    : [...mediaIds.value, id];
+}
+async function save() {
+  if (!body.value.trim() && !mediaIds.value.length) {
+    error.value = "写一句话，或添加一张图片、一段视频。";
+    return;
+  }
+  saving.value = true;
+  error.value = "";
+  try {
+    const result = await api<Entry>(
+      original ? `/api/entries/${original.id}` : "/api/entries",
+      original ? "PATCH" : "POST",
+      {
+        date: date.value,
+        body: body.value.trim(),
+        authorId: original?.authorId || actor.value,
+        mediaIds: mediaIds.value,
+        ...(original ? { version: original.version } : {}),
+      },
+    );
+    state.entries = [
+      result,
+      ...state.entries.filter((e) => e.id !== result.id),
+    ].sort((a, b) => b.date.localeCompare(a.date));
+    notify("这一刻，已经好好记下了");
+    editorOpen.value = false;
+  } catch (e) {
+    error.value = (e as Error).message;
+  } finally {
+    saving.value = false;
+  }
+}
+function beforeUnload(e: BeforeUnloadEvent) {
+  if (dirty.value || uploading.value) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+}
+onMounted(() => {
+  window.addEventListener("beforeunload", beforeUnload);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener("beforeunload", beforeUnload);
+});
+</script>
+
+<template>
+  <Model
+    :title="original ? '再填几笔' : '记下这一天'"
+    :busy="saving || uploading"
+    wide
+    @close="close"
+  >
+    <form class="form-stack" @submit.prevent="save">
+      <div class="form-row">
+        <label
+          >发生在这一天<input
+            v-model="date"
+            aria-label="记录日期"
+            type="date"
+            min="1900-01-01"
+            :max="today"
+            required
+        /></label>
+        <div class="author-note">
+          <PenLine :size="16" /><span
+            >由{{
+              state.profiles.find((p) => p.id === (original?.authorId || actor))
+                ?.nickname
+            }}写下</span
+          >
+        </div>
+      </div>
+      <label
+        >想记住的事<textarea
+          v-model="body"
+          aria-label="记录内容"
+          rows="5"
+          maxlength="20000"
+          placeholder="一句话也好，一段小事也好，今天想和你一起记住什么？"
+        />
+      </label>
+      <div v-if="mediaIds.length" class="selected-media">
+        <button
+          v-for="media in selectedMedia"
+          :key="media.id"
+          type="button"
+          aria-label="移除这项附件"
+          @click="toggle(media.id)"
+        >
+          <MediaThumb :media="media" /><span>移除</span>
+        </button>
+      </div>
+      <UploadBox
+        @uploaded="(m) => mediaIds.push(m.id)"
+        @busy="uploading = $event"
+      />
+      <button
+        type="button"
+        class="text-button"
+        @click="showLibrary = !showLibrary"
+      >
+        <ImagePlus :size="16" />{{
+          showLibrary ? "收起相册" : "也可以从已有相册选择"
+        }}
+      </button>
+      <div v-if="showLibrary" class="library-grid">
+        <button
+          v-for="m in state.media"
+          :key="m.id"
+          type="button"
+          :class="{ chosen: mediaIds.includes(m.id) }"
+          :aria-label="`选择${m.name}`"
+          :aria-pressed="mediaIds.includes(m.id)"
+          @click="toggle(m.id)"
+        >
+          <MediaThumb :media="m" /><Check
+            v-if="mediaIds.includes(m.id)"
+            :size="18"
+          />
+        </button>
+        <p v-if="!state.media.length" class="muted">
+          相册还是空的，先上传一个瞬间吧。
+        </p>
+      </div>
+      <p v-if="error" role="alert" class="error-text">
+        {{ error
+        }}<span v-if="error.includes('更新') || error.includes('冲突')"
+          >请保留文字，关闭后刷新再编辑</span
+        >
+      </p>
+      <footer class="form-footer">
+        <button
+          type="button"
+          class="button secondary"
+          :disabled="saving || uploading"
+          @click="close"
+        >
+          暂时不写
+        </button>
+        <button class="button primary" :disabled="saving || uploading">
+          {{ saving ? "正在保存…" : uploading ? "等待上传完成…" : "保存这一刻"
+          }}<Check :size="16" />
+        </button>
+      </footer>
+    </form>
+  </Model>
+</template>
