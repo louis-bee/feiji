@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Play, ImageOff } from "lucide-vue-next";
 import { ref, watch } from "vue";
-import type { Media } from "../types";
+import type { Media } from "../../shared/types";
 const props = defineProps<{
   media: Media;
   eager?: boolean;

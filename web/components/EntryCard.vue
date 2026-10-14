@@ -5,7 +5,7 @@ import { state, actor, notify } from "../store";
 import { writeEntry, viewerId } from "../ui";
 import { api } from "../api";
 import { dateLabel } from "../../shared/dates";
-import type { Entry } from "../types";
+import type { Entry } from "../../shared/types";
 import Avatar from "./Avatar.vue";
 import MediaThumb from "./MediaThumb.vue";
 const props = defineProps<{

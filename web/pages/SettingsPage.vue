@@ -5,7 +5,7 @@ import { Check, Info } from "lucide-vue-next";
 import { state, notify } from "../store";
 import { api } from "../api";
 import Avatar from "../components/Avatar.vue";
-import type { Settings, Profile } from "../types";
+import type { Settings, Profile } from "../../shared/types";
 
 const settings = ref({ ...state.settings });
 const profiles = ref(state.profiles.map((p) => ({ ...p })));

@@ -1,6 +1,6 @@
 import { ref } from "vue"
 import { today } from "./store"
-import type { Entry } from "./types"
+import type { Entry } from "../shared/types"
 
 export const editorOpen = ref(false);
 export const editorEntry = ref<Entry | null>(null);

@@ -2,7 +2,7 @@ import { computed, reactive, ref } from "vue";
 import { api } from "./api";
 import { SESSION_KEY } from "./config";
 import { dayDiff, nextOccurrence, todayInZone } from "../shared/dates";
-import type { Actor, Bootstrap, DisplayEvent } from "./types";
+import type { Actor, Bootstrap, DisplayEvent } from "../shared/types";
 
 function savedActor(): Actor | null {
   try {

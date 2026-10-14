@@ -39,7 +39,7 @@ export function uploadFile(
   albumId: string | null,
   onProgress: (progress: number) => void,
   signal: AbortSignal,
-): Promise<import("./types").Media> {
+): Promise<import("../shared/types").Media> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     const absort = () => xhr.abort();

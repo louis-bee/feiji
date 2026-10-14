@@ -6,7 +6,7 @@ import UploadBox from "../components/UploadBox.vue";
 import MediaThumb from "../components/MediaThumb.vue";
 import { state, actor, notify, today } from "../store";
 import { api } from "../api";
-import type { Entry } from "../types";
+import type { Entry } from "../../shared/types";
 import { editorOpen, editorDate, editorEntry } from "../ui";
 
 const original = editorEntry.value;

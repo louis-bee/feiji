@@ -13,7 +13,7 @@ import { displayEvents, state, today, notify } from "../store";
 import { api } from "../api";
 import { dateLabel } from "../../shared/dates";
 import { writeEntry } from "../ui";
-import type { EventItem } from "../types";
+import type { EventItem } from "../../shared/types";
 import Modal from "../components/Model.vue";
 
 const upcoming = computed(() => displayEvents.value.filter((e) => e.days >= 0));

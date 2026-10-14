@@ -5,7 +5,7 @@ import { Plane, ArrowRight, Eye, EyeOff } from "lucide-vue-next";
 import Avatar from "../components/Avatar.vue";
 import { enter, state } from "../store";
 import { ENTRY_PASSWORD } from "../config";
-import type { Actor, Profile } from "../types";
+import type { Actor, Profile } from "../../shared/types";
 import { api } from "../api";
 import JourneyArt from "../components/JourneyArt.vue";
 

@@ -8,7 +8,7 @@ import type {
   Media,
   Profile,
   Settings,
-} from "../web/types";
+} from "../shared/types";
 
 export type StoredMedia = Media & {
   originalFile: string;

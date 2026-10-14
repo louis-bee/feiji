@@ -13,7 +13,7 @@ import {
 import { state, notify } from "../store";
 import { viewerId } from "../ui";
 import { api } from "../api";
-import { Album, Media } from "../types";
+import { Album, Media } from "../../shared/types";
 import Model from "../components/Model.vue";
 import UploadBox from "../components/UploadBox.vue";
 import MediaThumb from "../components/MediaThumb.vue";

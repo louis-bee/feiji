@@ -3,7 +3,7 @@ import { ref, onBeforeUnmount } from "vue";
 import { UploadCloud, X, RotateCcw, Check, BusFront } from "lucide-vue-next";
 import { uploadFile } from "../api";
 import { state } from "../store";
-import type { Media } from "../types";
+import type { Media } from "../../shared/types";
 const props = defineProps<{
   albumId?: string | null;
 }>();
