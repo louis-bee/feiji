@@ -1701,7 +1701,9 @@ button {
   box-shadow: 0 25px 90px #1d342b35;
   width: min(540px, calc(100vw - 30px));
   max-height: calc(100dvh - 48px);
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .modal.wide {
   width: min(760px, calc(100vw - 30px));
@@ -1709,6 +1711,10 @@ button {
 .modal::backdrop {
   background: #22372b69;
   backdrop-filter: blur(4px);
+}
+.modal::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 .modal-header {
   display: flex;
@@ -1731,6 +1737,48 @@ button {
 }
 .modal-body {
   padding: 25px 27px;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  /* scrollbar-width: auto; */
+  scrollbar-color: #c9d0bd transparent;
+}
+.modal-body::-webkit-scrollbar,
+.library-grid::-webkit-scrollbar,
+.media-stage::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.modal-body::-webkit-scrollbar-track,
+.library-grid::-webkit-scrollbar-track,
+.media-stage::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 2px;
+}
+.modal-body::-webkit-scrollbar-thumb,
+.library-grid::-webkit-scrollbar-thumb,
+.media-stage::-webkit-scrollbar-thumb {
+  background: #c9d0bd;
+  background-clip: content-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+}
+.modal-body::-webkit-scrollbar-thumb:hover,
+.library-grid::-webkit-scrollbar-thumb:hover,
+.media-stage::-webkit-scrollbar-thumb:hover {
+  background: #a9b49b;
+  background-clip: content-box;
+}
+.modal-body::-webkit-scrollbar-corner,
+.library-grid::-webkit-scrollbar-corner,
+.media-stage::-webkit-scrollbar-corner {
+  background: transparent;
+}
+.library-grid,
+.media-stage {
+  scrollbar-width: thin;
+  scrollbar-color: #c9d0bd transparent;
 }
 .form-stack {
   display: flex;

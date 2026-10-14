@@ -91,7 +91,7 @@ onUnmounted(() => {
         <span><strong>双人飞行日志</strong><small>OUR FLIGHT LOG</small></span>
       </RouterLink>
       <div class="sidebar-divider" />
-      <span class="nav-captain">属于我们的 / JOURNAL</span>
+      <span class="nav-caption">属于我们的 / JOURNAL</span>
       <nav aria-label="主导航">
         <RouterLink
           v-for="link in links"
