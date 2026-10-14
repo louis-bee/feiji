@@ -39,7 +39,7 @@ export function openDatabase(directory: string) {
   db.pragma("journal_mode = WAL");
   db.pragma("busy_timeout = 5000");
   const version = db.pragma("user_version", { simple: true }) as number;
-  if (version < 1) {
+  if (version > 1) {
     db.close();
     throw new Error("数据库版本高于应用版本，请勿直接降级。");
   }

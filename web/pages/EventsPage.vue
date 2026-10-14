@@ -91,7 +91,7 @@ async function remove(event: EventItem) {
 </script>
 
 <template>
-  <section class="page-info">
+  <section class="page-intro">
     <div>
       <span class="eyebrow">DATES TO REMEMBER</span>
       <h1>有些日子，值得期待<span class="title-dot">.</span></h1>
