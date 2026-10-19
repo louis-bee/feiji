@@ -1,0 +1,37 @@
+# Dependencies and generated output
+node_modules/
+dist/
+build/
+coverage/
+/test-results/
+/playwright-report/
+/.playwright-cli/
+.vite/
+*.tsbuildinfo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+config.private.*
+/config/local.json
+*.pem
+*.key
+
+# Runtime data, private media and backups
+/var/
+/data/
+/uploads/
+/backups/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+
+# Local logs and operating system files
+*.log
+.DS_Store
+Thumbs.db
