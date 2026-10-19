@@ -2,7 +2,10 @@ import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import App from "./App.vue";
 import { actor } from "./store";
+import { loadConfig } from "./config";
 import "./style.css";
+
+void loadConfig();
 
 export const router = createRouter({
   history: createWebHistory(),

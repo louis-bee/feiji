@@ -4,7 +4,7 @@ import { useRouter, useRoute } from "vue-router";
 import { Plane, ArrowRight, Eye, EyeOff } from "lucide-vue-next";
 import Avatar from "../components/Avatar.vue";
 import { enter, state } from "../store";
-import { ENTRY_PASSWORD } from "../config";
+import { entryPassword, loadConfig } from "../config";
 import type { Actor, Profile } from "../../shared/types";
 import { api } from "../api";
 import JourneyArt from "../components/JourneyArt.vue";
@@ -23,8 +23,9 @@ const password = ref("");
 const error = ref("");
 const reveal = ref(false);
 
-function submit() {
-  if (password.value !== ENTRY_PASSWORD) {
+async function submit() {
+  await loadConfig();
+  if (password.value !== entryPassword.value) {
     error.value = "口令不太对，再试一次吧。";
     return;
   }
