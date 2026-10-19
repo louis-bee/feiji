@@ -38,7 +38,7 @@ export const router = createRouter({
     {
       path: "/settings",
       component: () => import("./pages/SettingsPage.vue"),
-      meta: { title: "我们的小设置" },
+      meta: { title: "我们的设置" },
     },
     {
       path: "/:pathMatch(.*)*",

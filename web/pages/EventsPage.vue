@@ -118,7 +118,7 @@ async function remove(event: EventItem) {
   </section>
   <div class="section-heading">
     <h2>即将到来</h2>
-    <span class="muted small">只在站内提醒，不会发送通知</span>
+    <!-- <span class="muted small">只在站内提醒，不会发送通知</span> -->
   </div>
   <div class="events-grid">
     <article

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
-import { Check, Info } from "lucide-vue-next";
+import { Check } from "lucide-vue-next";
 import { state, notify } from "../store";
 import { api } from "../api";
 import Avatar from "../components/Avatar.vue";
@@ -39,7 +39,7 @@ async function save() {
       settings: settings.value,
       profiles: profiles.value,
     });
-    notify("我们的小设置，保存好了");
+    notify("设置已经保存好了");
   } catch (e) {
     error.value = `${(e as Error).message} 已成功保存的项目会保留，其余输入也还在。`;
   } finally {
@@ -67,7 +67,7 @@ onBeforeUnmount(() => {
   <section class="page-intro">
     <div>
       <span class="eyebrow">MIKE IT OURS</span>
-      <h1>我们的小设置<span class="title-dot">.</span></h1>
+      <h1>我们的设置<span class="title-dot">.</span></h1>
       <p>名字、日期，还有打开日志时看到的第一张照片。</p>
     </div>
   </section>
@@ -157,11 +157,11 @@ onBeforeUnmount(() => {
     </section>
     <div class="settings-bottom">
       <div class="boundary-note">
-        <Info :size="18" />
+        <!-- <Info :size="18" />
         <p>
           目前使用前端口令入口，不能保护 API
           和媒体链接。口令在<code>web/config.ts</code>中修改。本站不自动备份，不提供原片下载功能
-        </p>
+        </p> -->
       </div>
       <p v-if="error" role="alert" class="error-text">{{ error }}</p>
       <button class="button primary" :disabled="!dirty || saving">

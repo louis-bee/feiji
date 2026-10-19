@@ -74,7 +74,7 @@ async function submit() {
           >
             <Avatar :actor="p.id" large /><strong>{{ p.nickname }}</strong
             ><small>{{
-              p.id === "her" ? "风里有一架小飞机" : "带着蜜蜂黄的企鹅"
+              p.id === "her" ? "风里有一架小飞机" : "追着航迹的企鹅"
             }}</small>
           </button>
         </div>
@@ -105,7 +105,7 @@ async function submit() {
           翻开我们的日志<ArrowRight :size="18" />
         </button>
       </form>
-      <p class="login-boundary">前端简单口令，不提供真正的访问保护</p>
+      <p class="login-boundary"></p>
       <small class="login-since">OUR STORY, STILL UNFOLDING.</small>
     </section>
   </main>

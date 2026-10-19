@@ -58,8 +58,8 @@ a:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 3px solid #bc974f;
-  outline-offset: 4px;
+  outline: 1px solid #bc974f;
+  box-shadow: 0 0 0 1px #bc974f;
 }
 button {
   border: 0;
@@ -394,6 +394,7 @@ button {
   margin-top: 5px;
 }
 .avatar {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -409,6 +410,12 @@ button {
   background: #f1dfb6;
 }
 .avatar svg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
   width: 90%;
   height: 90%;
 }
