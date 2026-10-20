@@ -40,7 +40,7 @@ const featured = computed(() =>
   <section class="page-intro">
     <div>
       <span class="eyebrow">OUR LITTLE JOURNEY</span>
-      <h1>把日子，写成我们的故事<span class="title-dot">.</span></h1>
+      <h1>把日子，写成我们的故事</h1>
       <p>有些瞬间很小，却值得被好好收藏。</p>
     </div>
     <button type="button" class="button primary" @click="writeEntry()">

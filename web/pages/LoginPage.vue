@@ -25,6 +25,10 @@ const reveal = ref(false);
 
 async function submit() {
   await loadConfig();
+  if (!password.value) {
+    error.value = "请输入我们的口令。";
+    return;
+  }
   if (password.value !== entryPassword.value) {
     error.value = "口令不太对，再试一次吧。";
     return;
@@ -62,7 +66,7 @@ async function submit() {
       <span class="eyebrow">WELCOME BACK / 欢迎回来</span>
       <h2>今天，由谁来翻开？</h2>
       <p class="muted">选一个熟悉的名字，回到我们的小世界。</p>
-      <form @submit.prevent="submit">
+      <form novalidate @submit.prevent="submit">
         <div class="identity-options">
           <button
             v-for="p in state.profiles"

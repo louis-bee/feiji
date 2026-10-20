@@ -116,9 +116,39 @@ textarea {
   line-height: 1.8;
 }
 input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--green);
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1.5px solid #c8cdbc;
+  border-radius: 6px;
+  background: #fffefb;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+input[type="checkbox"]:checked {
+  background: var(--green);
+  border-color: var(--green);
+}
+input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 3px;
+  width: 5px;
+  height: 9px;
+  border: solid #fffdf6;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid #c7a267;
+  outline-offset: 2px;
 }
 input[type="date"],
 input[type="month"] {
@@ -158,9 +188,6 @@ button {
   line-height: 1.6;
   color: #7b897b;
   font-weight: 600;
-}
-.title-dot {
-  color: #bb9860;
 }
 .button {
   display: inline-flex;
@@ -1712,8 +1739,66 @@ button {
   display: flex;
   flex-direction: column;
 }
+.modal:not([open]) {
+  display: none;
+}
 .modal.wide {
   width: min(760px, calc(100vw - 30px));
+}
+.confirm-modal {
+  width: min(440px, calc(100vw - 30px));
+}
+.confirm-body {
+  padding: 36px 34px 30px;
+  text-align: center;
+}
+.confirm-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f4ede0;
+  color: #b98a2f;
+  margin-bottom: 12px;
+}
+.confirm-icon.danger {
+  background: #f7e6e2;
+  color: var(--danger);
+}
+.confirm-icon svg {
+  transform: translateY(-1.3px);
+}
+.confirm-message {
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--ink);
+  margin: 0;
+  white-space: pre-line;
+}
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+.confirm-actions .button {
+  flex: 1;
+  min-width: 0;
+  min-height: 46px;
+  padding: 12px 16px;
+  font-size: 14px;
+  border-radius: 11px;
+}
+.button.danger-button {
+  background: var(--danger);
+  color: #fffdf6;
+  border: 1px solid var(--danger);
+  box-shadow: 0 3px 6px #a2443b1a;
+}
+.button.danger-button:hover:not(:disabled) {
+  background: #8a352d;
+  transform: translateY(-1px);
 }
 .modal::backdrop {
   background: #22372b69;
@@ -1871,10 +1956,28 @@ button {
 }
 .upload-job progress {
   width: 100%;
-  height: 5px;
-  accent-color: var(--green);
+  height: 6px;
   display: block;
   margin: 9px 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e6eadb;
+}
+.upload-job progress::-webkit-progress-bar {
+  background: #e6eadb;
+  border-radius: 999px;
+}
+.upload-job progress::-webkit-progress-value {
+  background: var(--green);
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+.upload-job progress::-moz-progress-bar {
+  background: var(--green);
+  border-radius: 999px;
 }
 .upload-job .text-button {
   min-height: 26px;

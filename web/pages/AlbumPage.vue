@@ -11,7 +11,7 @@ import {
   ArrowUpRight,
 } from "lucide-vue-next";
 import { state, notify } from "../store";
-import { viewerId } from "../ui";
+import { confirmDialog, viewerId } from "../ui";
 import { api } from "../api";
 import { Album, Media } from "../../shared/types";
 import Model from "../components/Model.vue";
@@ -72,6 +72,10 @@ const openMedia = (media: Media) => {
   error.value = "";
 };
 async function saveAlbum() {
+  if (!albumForm.value.name.trim()) {
+    error.value = "请填写相册名称。";
+    return;
+  }
   saving.value = true;
   error.value = "";
   try {
@@ -134,9 +138,14 @@ async function toggleFeatured(media: Media) {
 }
 async function deleteAlbum() {
   const a = selectedAlbum.value;
-  if (!a || !confirm(`删除「${a.name}」？非空相册需要先移出其中的媒体。`)) {
+  if (!a) return;
+  if (
+    !(await confirmDialog(
+      `删除「${a.name}」？非空相册需要先移出其中的媒体。`,
+      { danger: true, confirmText: "删除相册" },
+    ))
+  )
     return;
-  }
   try {
     await api(`/api/albums/${a.id}?version=${a.version}`, "DELETE");
     state.albums = state.albums.filter((value) => value.id !== a.id);
@@ -148,9 +157,10 @@ async function deleteAlbum() {
 }
 async function deleteMedia(media: Media) {
   if (
-    !confirm(
-      "永久删除这个媒体文件？删除后无法恢复。被日记或封面引用的文件需要先解除关联",
-    )
+    !(await confirmDialog(
+      "永久删除这个媒体文件？删除后无法恢复。被日记或封面引用的文件需要先解除关联。",
+      { danger: true, confirmText: "删除" },
+    ))
   )
     return;
   try {
@@ -167,7 +177,7 @@ async function deleteMedia(media: Media) {
   <section class="page-intro">
     <div>
       <span class="eyebrow">LITTLE THINGS, BIG MEMORIES</span>
-      <h1>沿途的光，都收在这里<span class="title-dot">.</span></h1>
+      <h1>沿途的光，都收在这里</h1>
       <p>那些不想忘记的照片，和按下录制的瞬间。</p>
     </div>
     <button class="button primary" @click="openUpload">
@@ -332,7 +342,7 @@ async function deleteMedia(media: Media) {
     :busy="saving"
     @close="albumOpen = false"
   >
-    <form class="form-stack" @submit.prevent="saveAlbum">
+    <form class="form-stack" novalidate @submit.prevent="saveAlbum">
       <label>
         相册名称<input
           v-model="albumForm.name"

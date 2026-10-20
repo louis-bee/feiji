@@ -12,7 +12,7 @@ import {
 import { displayEvents, state, today, notify } from "../store";
 import { api } from "../api";
 import { dateLabel } from "../../shared/dates";
-import { writeEntry } from "../ui";
+import { confirmDialog, writeEntry } from "../ui";
 import type { EventItem } from "../../shared/types";
 import Modal from "../components/Model.vue";
 
@@ -48,16 +48,27 @@ function open(event: EventItem | null = null) {
   error.value = "";
   showForm.value = true;
 }
-function close() {
+async function close() {
   if (saving.value) return;
   if (
     (form.value.title || form.value.note) &&
-    !confirm("关闭编辑？未保存的改动会丢失。")
+    !(await confirmDialog("关闭编辑？未保存的改动会丢失。", {
+      danger: true,
+      confirmText: "关闭",
+    }))
   )
     return;
   showForm.value = false;
 }
 async function save() {
+  if (!form.value.title.trim()) {
+    error.value = "请给这个日子起个名字。";
+    return;
+  }
+  if (!form.value.date) {
+    error.value = "请选择日期。";
+    return;
+  }
   saving.value = true;
   error.value = "";
   try {
@@ -79,7 +90,13 @@ async function save() {
   }
 }
 async function remove(event: EventItem) {
-  if (!confirm(`删除「${event.title}」？关联的日记不会删除。`)) return;
+  if (
+    !(await confirmDialog(`删除「${event.title}」？关联的日记不会删除。`, {
+      danger: true,
+      confirmText: "删除",
+    }))
+  )
+    return;
   try {
     await api(`/api/events/${event.id}?version=${event.version}`, "DELETE");
     state.events = state.events.filter((e) => e.id !== event.id);
@@ -94,7 +111,7 @@ async function remove(event: EventItem) {
   <section class="page-intro">
     <div>
       <span class="eyebrow">DATES TO REMEMBER</span>
-      <h1>有些日子，值得期待<span class="title-dot">.</span></h1>
+      <h1>有些日子，值得期待</h1>
       <p>生日、周年，还有只属于我们的特别一天。</p>
     </div>
     <button class="button primary" @click="open()">
@@ -204,7 +221,7 @@ async function remove(event: EventItem) {
     :busy="saving"
     @close="close"
   >
-    <form class="form-stack" @submit.prevent="save">
+    <form class="form-stack" novalidate @submit.prevent="save">
       <label
         >纪念日名称<input
           v-model="form.title"

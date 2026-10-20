@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { Pencil, Trash2, Image as ImageIcon } from "lucide-vue-next";
 import { state, actor, notify } from "../store";
-import { writeEntry, viewerId } from "../ui";
+import { confirmDialog, writeEntry, viewerId } from "../ui";
 import { api } from "../api";
 import { dateLabel } from "../../shared/dates";
 import type { Entry } from "../../shared/types";
@@ -23,7 +23,13 @@ const media = computed(() =>
 const deleting = ref(false);
 const error = ref("");
 async function remove() {
-  if (!confirm("删除这条记录？关联的图片和视频仍保留在相册中。")) return;
+  if (
+    !(await confirmDialog("删除这条记录？关联的图片和视频仍保留在相册中。", {
+      danger: true,
+      confirmText: "删除",
+    }))
+  )
+    return;
   deleting.value = true;
   try {
     await api(

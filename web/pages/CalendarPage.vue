@@ -110,7 +110,7 @@ function keyboard(e: KeyboardEvent, date: string) {
   <section class="page-intro">
     <div>
       <span class="eyebrow">EVERYDAY, WITH YOU</span>
-      <h1>每一天，都有迹可循<span class="title-dot">.</span></h1>
+      <h1>每一天，都有迹可循</h1>
       <p>不一定发生大事，平凡的一天也值得记住。</p>
     </div>
     <button type="button" class="button primary" @click="writeEntry()">
