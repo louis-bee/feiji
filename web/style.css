@@ -1239,8 +1239,8 @@ button {
   margin-top: 4px;
 }
 .entry-dot {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #87a277;
   display: inline-block;

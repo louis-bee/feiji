@@ -45,7 +45,10 @@ export const router = createRouter({
       redirect: "/",
     },
   ],
-  scrollBehavior: () => ({ top: 0 }),
+  scrollBehavior: (to, from) => {
+    if (to.path === from.path) return false;
+    return { top: 0 };
+  },
 });
 
 router.beforeEach((to) => {
