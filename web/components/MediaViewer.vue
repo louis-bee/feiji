@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, computed, watch, onBeforeUnmount } from "vue";
-import { ChevronLeft, ChevronRight, X } from "lucide-vue-next";
+import { ChevronLeft, ChevronRight, Heart, X } from "lucide-vue-next";
 import Model from "../components/Model.vue";
-import { state } from "../store";
+import { state, notify } from "../store";
 import { viewerId } from "../ui";
+import { api } from "../api";
+import type { Media } from "../../shared/types";
 
 const current = computed(() =>
   state.media.find((m) => m.id === viewerId.value),
@@ -54,6 +56,28 @@ function move(direction: number) {
     state.media[(index + direction + state.media.length) % state.media.length]
       ?.id || null;
 }
+const toggling = ref(false);
+async function toggleFeatured() {
+  const media = current.value;
+  if (!media || toggling.value) return;
+  toggling.value = true;
+  try {
+    const updated = await api<Media>(`/api/media/${media.id}`, "PATCH", {
+      albumId: media.albumId,
+      caption: media.caption,
+      date: media.date,
+      featured: !media.featured,
+      version: media.version,
+    });
+    state.media = state.media.map((value) =>
+      value.id === updated.id ? updated : value,
+    );
+  } catch (e) {
+    notify((e as Error).message);
+  } finally {
+    toggling.value = false;
+  }
+}
 </script>
 
 <template>
@@ -63,6 +87,18 @@ function move(direction: number) {
     wide
     @close="viewerId = null"
   >
+    <template #title-suffix>
+      <button
+        type="button"
+        :class="['viewer-favorite', { selected: current.featured }]"
+        :aria-label="current.featured ? '取消精选' : '设为精选'"
+        :aria-pressed="current.featured"
+        :disabled="toggling"
+        @click="toggleFeatured"
+      >
+        <Heart :size="18" :fill="current.featured ? 'currentColor' : 'none'" />
+      </button>
+    </template>
     <div class="media-stage">
       <img
         v-if="current.kind === 'image'"
