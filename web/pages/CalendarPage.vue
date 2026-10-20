@@ -7,7 +7,7 @@ import {
   PenLine,
   CalendarDays,
   Heart,
-  Key,
+  Cake,
 } from "lucide-vue-next";
 import { state, today } from "../store";
 import { writeEntry } from "../ui";
@@ -39,23 +39,21 @@ const records = computed(() =>
     .filter((e) => e.date === selected.value)
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
 );
-const monthCount = computed(
-  () => state.entries.filter((e) => e.date.startsWith(month.value)).length,
-);
 function eventsOn(date: string) {
-  const result: string[] = [];
+  const result: { title: string; kind: "birthday" | "event" }[] = [];
   for (const p of state.profiles) {
     if (date >= p.birthday && date.slice(5) === p.birthday.slice(5)) {
-      result.push(`${p.nickname}的生日`);
+      result.push({ title: `${p.nickname}的生日`, kind: "birthday" });
     }
   }
   if (
     date >= state.settings.startDate &&
     date.slice(5) === state.settings.startDate.slice(5)
   ) {
-    result.push(
-      date === state.settings.startDate ? "我们开始的那天" : "恋爱周年",
-    );
+    result.push({
+      title: date === state.settings.startDate ? "我们开始的那天" : "恋爱周年",
+      kind: "event",
+    });
   }
   for (const e of state.events) {
     if (
@@ -63,7 +61,7 @@ function eventsOn(date: string) {
         ? e.date === date
         : date >= e.date && date.slice(5) === e.date.slice(5)
     ) {
-      result.push(e.title);
+      result.push({ title: e.title, kind: "event" });
     }
   }
   return result;
@@ -110,7 +108,7 @@ function keyboard(e: KeyboardEvent, date: string) {
   <section class="page-intro">
     <div>
       <span class="eyebrow">EVERYDAY, WITH YOU</span>
-      <h1>每一天，都有迹可循<span class="title-dot">.</span></h1>
+      <h1>每一天，都有迹可循</h1>
       <p>不一定发生大事，平凡的一天也值得记住。</p>
     </div>
     <button type="button" class="button primary" @click="writeEntry()">
@@ -162,7 +160,14 @@ function keyboard(e: KeyboardEvent, date: string) {
               today: date === today,
             },
           ]"
-          :aria-label="`${date}${eventsOn(date).length ? ' ' + eventsOn(date).join('、') : ' '}${state.entries.some((e) => e.date === date) ? '有记录' : ''}`"
+          :aria-label="`${date}${
+            eventsOn(date).length
+              ? ' ' +
+                eventsOn(date)
+                  .map((e) => e.title)
+                  .join('、')
+              : ' '
+          }${state.entries.some((e) => e.date === date) ? '有记录' : ''}`"
           :aria-pressed="date === today"
           @click="selectDate(date)"
           @keydown="keyboard($event, date)"
@@ -172,13 +177,22 @@ function keyboard(e: KeyboardEvent, date: string) {
             <i
               v-if="state.entries.some((e) => e.date === date)"
               class="entry-dot"
-            /><Heart v-if="eventsOn(date).length" :size="10" />
+            />
+            <Cake
+              v-if="eventsOn(date).some((e) => e.kind === 'birthday')"
+              :size="12"
+            />
+            <Heart
+              v-if="eventsOn(date).some((e) => e.kind === 'event')"
+              :size="12"
+            />
           </div>
         </button>
       </div>
       <footer class="calendar-legend">
         <span><i class="entry-dot" />有记录</span>
         <span><Heart :size="12" />重要日子</span>
+        <span><Cake :size="12" />生日</span>
         <span>不必每天写，想记时再来。</span>
       </footer>
     </section>
@@ -202,8 +216,9 @@ function keyboard(e: KeyboardEvent, date: string) {
         </button>
       </header>
       <div v-if="eventsOn(selected).length" class="day-events">
-        <span v-for="title in eventsOn(selected)" :key="title">
-          <Heart :size="14" />{{ title }}
+        <span v-for="item in eventsOn(selected)" :key="item.title">
+          <Cake v-if="item.kind === 'birthday'" :size="14" />
+          <Heart v-else :size="14" />{{ item.title }}
         </span>
       </div>
       <div v-if="records.length" class="day-records">

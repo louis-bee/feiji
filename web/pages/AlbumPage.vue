@@ -10,8 +10,8 @@ import {
   Trash2,
   ArrowUpRight,
 } from "lucide-vue-next";
-import { state, notify } from "../store";
-import { viewerId } from "../ui";
+import { state, notify, today } from "../store";
+import { confirmDialog, viewerId } from "../ui";
 import { api } from "../api";
 import { Album, Media } from "../../shared/types";
 import Model from "../components/Model.vue";
@@ -36,6 +36,7 @@ const displayed = computed(() =>
 const uploadOpen = ref(false);
 const uploading = ref(false);
 const uploadAlbum = ref<string | null>(null);
+const uploadDate = ref(today.value);
 const albumOpen = ref(false);
 const editingAlbum = ref<Album | null>(null);
 const albumForm = ref({ name: "", description: "" });
@@ -51,6 +52,7 @@ const error = ref("");
 const toggling = ref(new Set<string>());
 function openUpload() {
   uploadAlbum.value = selectedAlbum.value?.id ?? null;
+  uploadDate.value = today.value;
   uploadOpen.value = true;
 }
 function openAlbum(album: Album | null = null) {
@@ -72,6 +74,10 @@ const openMedia = (media: Media) => {
   error.value = "";
 };
 async function saveAlbum() {
+  if (!albumForm.value.name.trim()) {
+    error.value = "请填写相册名称。";
+    return;
+  }
   saving.value = true;
   error.value = "";
   try {
@@ -134,9 +140,14 @@ async function toggleFeatured(media: Media) {
 }
 async function deleteAlbum() {
   const a = selectedAlbum.value;
-  if (!a || !confirm(`删除「${a.name}」？非空相册需要先移出其中的媒体。`)) {
+  if (!a) return;
+  if (
+    !(await confirmDialog(`删除「${a.name}」？非空相册需要先移出其中的媒体。`, {
+      danger: true,
+      confirmText: "删除相册",
+    }))
+  )
     return;
-  }
   try {
     await api(`/api/albums/${a.id}?version=${a.version}`, "DELETE");
     state.albums = state.albums.filter((value) => value.id !== a.id);
@@ -148,9 +159,10 @@ async function deleteAlbum() {
 }
 async function deleteMedia(media: Media) {
   if (
-    !confirm(
-      "永久删除这个媒体文件？删除后无法恢复。被日记或封面引用的文件需要先解除关联",
-    )
+    !(await confirmDialog(
+      "永久删除这个媒体文件？删除后无法恢复。被日记或封面引用的文件需要先解除关联。",
+      { danger: true, confirmText: "删除" },
+    ))
   )
     return;
   try {
@@ -167,7 +179,7 @@ async function deleteMedia(media: Media) {
   <section class="page-intro">
     <div>
       <span class="eyebrow">LITTLE THINGS, BIG MEMORIES</span>
-      <h1>沿途的光，都收在这里<span class="title-dot">.</span></h1>
+      <h1>沿途的光，都收在这里</h1>
       <p>那些不想忘记的照片，和按下录制的瞬间。</p>
     </div>
     <button class="button primary" @click="openUpload">
@@ -309,13 +321,26 @@ async function deleteMedia(media: Media) {
     :busy="uploading"
     @close="uploadOpen = false"
     ><label class="upload-album-select"
+      >这一天<input
+        v-model="uploadDate"
+        aria-label="媒体日期"
+        type="date"
+        min="1900-01-01"
+        max="2099-12-31"
+        :disabled="uploading"
+    /></label>
+    <label class="upload-album-select"
       >放进哪个相册<select v-model="uploadAlbum" :disabled="uploading">
         <option :value="null">暂不归类</option>
         <option v-for="a in state.albums" :key="a.id" :value="a.id">
           {{ a.name }}
         </option>
       </select></label
-    ><UploadBox :albumId="uploadAlbum" @busy="uploading = $event" />
+    ><UploadBox
+      :albumId="uploadAlbum"
+      :date="uploadDate"
+      @busy="uploading = $event"
+    />
     <div class="form-footer">
       <button
         class="button primary"
@@ -332,7 +357,7 @@ async function deleteMedia(media: Media) {
     :busy="saving"
     @close="albumOpen = false"
   >
-    <form class="form-stack" @submit.prevent="saveAlbum">
+    <form class="form-stack" novalidate @submit.prevent="saveAlbum">
       <label>
         相册名称<input
           v-model="albumForm.name"
@@ -375,7 +400,7 @@ async function deleteMedia(media: Media) {
         />
       </label>
       <label
-        >这一天（可不填）<input
+        >这一天<input
           v-model="mediaForm.date"
           aria-label="媒体日期"
           type="date"

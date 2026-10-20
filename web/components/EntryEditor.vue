@@ -7,7 +7,7 @@ import MediaThumb from "../components/MediaThumb.vue";
 import { state, actor, notify, today } from "../store";
 import { api } from "../api";
 import type { Entry } from "../../shared/types";
-import { editorOpen, editorDate, editorEntry } from "../ui";
+import { confirmDialog, editorOpen, editorDate, editorEntry } from "../ui";
 
 const original = editorEntry.value;
 const date = ref(editorDate.value);
@@ -29,11 +29,14 @@ const dirty = computed(
     body.value !== (original?.body || "") ||
     mediaIds.value.join() !== (original?.mediaIds || []).join(),
 );
-function close() {
+async function close() {
   if (saving.value || uploading.value) return;
   if (
     dirty.value &&
-    !confirm("还有未保存的记录，确定离开吗？已上传的媒体会保留在相册里。")
+    !(await confirmDialog(
+      "还有未保存的记录，确定离开吗？已上传的媒体会保留在相册里。",
+      { danger: true, confirmText: "离开" },
+    ))
   )
     return;
   editorOpen.value = false;
@@ -44,6 +47,10 @@ function toggle(id: string) {
     : [...mediaIds.value, id];
 }
 async function save() {
+  if (!date.value) {
+    error.value = "请选择记录日期。";
+    return;
+  }
   if (!body.value.trim() && !mediaIds.value.length) {
     error.value = "写一句话，或添加一张图片、一段视频。";
     return;
@@ -95,7 +102,7 @@ onBeforeUnmount(() => {
     wide
     @close="close"
   >
-    <form class="form-stack" @submit.prevent="save">
+    <form class="form-stack" novalidate @submit.prevent="save">
       <div class="form-row">
         <label
           >发生在这一天<input

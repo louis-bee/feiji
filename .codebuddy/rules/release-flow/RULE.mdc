@@ -1,0 +1,79 @@
+---
+description: 本项目发版流程。把 master 上的发布点聚合（squash）成 release 分支上的一个版本 commit。当用户提到发版、发布新版本、release、打版本、切版本时使用。
+alwaysApply: false
+enabled: true
+updatedAt: 2026-10-20T00:00:00.000Z
+provider:
+---
+
+# 发版流程（feiji / our-flight-log）
+
+## 分支模型
+
+- `master`：日常开发分支，提交粒度随意（"进度30%"、fix、refactor 等）。
+- `release`：**孤儿分支**，与 master 无血缘关系。每个 commit = 一个已发布版本，commit 的树直接取自 master 上的发布点。
+  - 因为是快照式记录，相邻两个 release commit 的 diff 天然等于"上一版本至今的全部改动"，即 squash 效果。
+  - **不要用 `git merge --squash master`**：squash commit 不是 merge commit，merge-base 不会前进，第二次 squash 会重复合并旧改动并冲突。
+- 版本号遵循 `package.json` 的 `version` 字段，发版时两个地方必须一致。
+
+## 一、首次初始化（release 分支已存在则跳过）
+
+以 v0.1.1 的发布点 `cd342a3` 为例：
+
+```powershell
+git switch --orphan release
+git read-tree --reset -u cd342a3     # 用发布点的整棵树覆盖索引和工作区
+git commit -m "release: v0.1.1 (from cd342a3)"
+git tag -a v0.1.1 -m "release v0.1.1"
+git switch master
+```
+
+## 二、每次发版步骤（v0.2.0 为例）
+
+1. **在 master 上完成发布准备**：功能合入、`package.json` 的 `version` 改为新版本号、`pnpm build` / `pnpm typecheck` 通过，提交到 master。
+2. **确认发布点**：通常是 master 的 HEAD（`git log --oneline -1 master`），也可以指定某个 commit。
+3. **执行脚本**（仓库根目录，PowerShell）：
+
+```powershell
+.\scripts\release.ps1 -Version v0.2.0                 # 发布点 = master HEAD
+.\scripts\release.ps1 -Version v0.2.0 -Source abc1234 # 指定发布点
+.\scripts\release.ps1 -Version v0.2.0 -DryRun         # 只看将被聚合的 commit 清单，不改动
+```
+
+脚本做的事：检查工作区干净 → 检查 release 分支与 tag 重复 → 打印将被聚合的 commit 清单 → `git read-tree --reset -u <发布点>` → `git commit -m "release: v0.2.0 (from <短hash>)"` → `git tag -a v0.2.0` → 切回原分支。
+
+4. **人工核对**：`git log --oneline release`、`git diff v0.1.1 v0.2.0 --stat`。
+
+等价的手工命令（脚本出问题时的兜底）：
+
+```powershell
+git switch release
+git read-tree --reset -u master
+git commit -m "release: v0.2.0 (from <短hash>)"
+git tag -a v0.2.0 -m "release v0.2.0"
+git switch master
+```
+
+## 三、约束
+
+- **不 push**：release 分支与 tag 只保留在本地，任何步骤都不要执行 `git push`（包括 `--follow-tags`）。用户明确要求时才推。
+- 不在 `release` 分支上开发或改代码，它只做版本快照。
+- 紧急修复：在 master 上改 → 走一次发版（生成新版本 commit）。
+- `git read-tree --reset -u` 会丢弃未提交改动，执行前必须保证工作区干净。
+- 生成 CHANGELOG 用源分支区间：`git log --oneline <上一发布点>..<本次发布点>`；上一发布点可从 release 分支最后一条 commit message 的 `(from xxxxxxx)` 中读取。
+
+## 四、撤销
+
+刚打完的版本写错了（未 push）：
+
+```powershell
+git switch release
+git reset --hard HEAD~1
+git tag -d v0.2.0
+git switch master
+```
+
+## 五、参考
+
+- 脚本：`scripts/release.ps1`
+- 当前版本线：`v0.1.1`（发布点 cd342a3）

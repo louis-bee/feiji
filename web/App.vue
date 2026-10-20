@@ -26,8 +26,9 @@ import {
   clock,
   notice,
 } from "./store";
-import { editorOpen, writeEntry, viewerId } from "./ui";
+import { confirmDialog, editorOpen, writeEntry, viewerId } from "./ui";
 import Avatar from "./components/Avatar.vue";
+import ConfirmDialog from "./components/ConfirmDialog.vue";
 import EntryEditor from "./components/EntryEditor.vue";
 import MediaViewer from "./components/MediaViewer.vue";
 
@@ -44,8 +45,14 @@ function reload() {
   void refresh().catch(() => {});
 }
 
-function logout() {
-  if (!confirm("暂时合上日志？")) return;
+async function logout() {
+  if (
+    !(await confirmDialog("暂时合上日志？", {
+      danger: true,
+      confirmText: "合上日志",
+    }))
+  )
+    return;
   leave();
   void router.replace("/login");
 }
@@ -193,7 +200,7 @@ onUnmounted(() => {
             state.settings.startDate.replaceAll("-", ".")
           }}</span
         >
-        <span>慢慢走，好好记。<ArrowRight :size="12" /></span>
+        <span>慢慢走，好好记<ArrowRight :size="12" /></span>
       </footer>
     </div>
     <nav class="mobile-nav" aria-label="移动端导航">
@@ -210,5 +217,6 @@ onUnmounted(() => {
   </div>
   <EntryEditor v-if="editorOpen && actor" />
   <MediaViewer v-if="viewerId" :id="viewerId" />
+  <ConfirmDialog />
   <div v-if="notice" class="toast" role="status">{{ notice }}</div>
 </template>

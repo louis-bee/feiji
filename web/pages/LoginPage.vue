@@ -25,6 +25,10 @@ const reveal = ref(false);
 
 async function submit() {
   await loadConfig();
+  if (!password.value) {
+    error.value = "请输入我们的口令。";
+    return;
+  }
   if (password.value !== entryPassword.value) {
     error.value = "口令不太对，再试一次吧。";
     return;
@@ -62,7 +66,7 @@ async function submit() {
       <span class="eyebrow">WELCOME BACK / 欢迎回来</span>
       <h2>今天，由谁来翻开？</h2>
       <p class="muted">选一个熟悉的名字，回到我们的小世界。</p>
-      <form @submit.prevent="submit">
+      <form novalidate @submit.prevent="submit">
         <div class="identity-options">
           <button
             v-for="p in state.profiles"
@@ -74,7 +78,7 @@ async function submit() {
           >
             <Avatar :actor="p.id" large /><strong>{{ p.nickname }}</strong
             ><small>{{
-              p.id === "her" ? "风里有一架小飞机" : "带着蜜蜂黄的企鹅"
+              p.id === "her" ? "风里有只小飞机" : "追着航迹的企鹅"
             }}</small>
           </button>
         </div>
@@ -105,7 +109,7 @@ async function submit() {
           翻开我们的日志<ArrowRight :size="18" />
         </button>
       </form>
-      <p class="login-boundary">前端简单口令，不提供真正的访问保护</p>
+      <p class="login-boundary"></p>
       <small class="login-since">OUR STORY, STILL UNFOLDING.</small>
     </section>
   </main>

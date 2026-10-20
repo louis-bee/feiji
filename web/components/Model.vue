@@ -40,7 +40,10 @@ onUnmounted(() => {
     <header class="modal-header">
       <div>
         <span class="eyebrow">OUR FLIGHT LOG</span>
-        <h2 id="model-title">{{ title }}</h2>
+        <div class="model-title-line">
+          <h2 id="model-title">{{ title }}</h2>
+          <slot name="title-suffix" />
+        </div>
       </div>
       <button
         type="button"

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
-import { Check, Info } from "lucide-vue-next";
+import { Check } from "lucide-vue-next";
 import { state, notify } from "../store";
 import { api } from "../api";
+import { confirmDialog } from "../ui";
 import Avatar from "../components/Avatar.vue";
 import type { Settings, Profile } from "../../shared/types";
 
@@ -20,6 +21,24 @@ const dirty = computed(
 const saving = ref(false);
 const error = ref("");
 async function save() {
+  for (const p of profiles.value) {
+    if (!p.nickname.trim()) {
+      error.value = "请填写昵称。";
+      return;
+    }
+    if (!p.birthday) {
+      error.value = "请选择公历生日。";
+      return;
+    }
+  }
+  if (!settings.value.startDate) {
+    error.value = "请选择恋爱起始日。";
+    return;
+  }
+  if (!settings.value.timezone.trim()) {
+    error.value = "请填写一起使用的时区。";
+    return;
+  }
   saving.value = true;
   error.value = "";
   try {
@@ -39,7 +58,7 @@ async function save() {
       settings: settings.value,
       profiles: profiles.value,
     });
-    notify("我们的小设置，保存好了");
+    notify("设置已经保存好了");
   } catch (e) {
     error.value = `${(e as Error).message} 已成功保存的项目会保留，其余输入也还在。`;
   } finally {
@@ -52,9 +71,13 @@ function beforeUnload(e: BeforeUnloadEvent) {
     e.returnValue = "";
   }
 }
-onBeforeRouteLeave(
-  () => !dirty.value || confirm("还有未保存的设置，确定离开吗？"),
-);
+onBeforeRouteLeave(async () => {
+  if (!dirty.value) return true;
+  return confirmDialog("还有未保存的设置，确定离开吗？", {
+    danger: true,
+    confirmText: "离开",
+  });
+});
 onMounted(() => {
   window.addEventListener("beforeunload", beforeUnload);
 });
@@ -67,11 +90,11 @@ onBeforeUnmount(() => {
   <section class="page-intro">
     <div>
       <span class="eyebrow">MIKE IT OURS</span>
-      <h1>我们的小设置<span class="title-dot">.</span></h1>
+      <h1>我们的设置</h1>
       <p>名字、日期，还有打开日志时看到的第一张照片。</p>
     </div>
   </section>
-  <form class="settings-layout" @submit.prevent="save">
+  <form class="settings-layout" novalidate @submit.prevent="save">
     <section class="settings-card">
       <h2>故事的主角</h2>
       <div v-for="p in profiles" :key="p.id" class="profile-fields">
@@ -157,11 +180,11 @@ onBeforeUnmount(() => {
     </section>
     <div class="settings-bottom">
       <div class="boundary-note">
-        <Info :size="18" />
+        <!-- <Info :size="18" />
         <p>
           目前使用前端口令入口，不能保护 API
           和媒体链接。口令在<code>web/config.ts</code>中修改。本站不自动备份，不提供原片下载功能
-        </p>
+        </p> -->
       </div>
       <p v-if="error" role="alert" class="error-text">{{ error }}</p>
       <button class="button primary" :disabled="!dirty || saving">
