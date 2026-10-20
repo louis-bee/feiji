@@ -78,7 +78,7 @@ async function submit() {
           >
             <Avatar :actor="p.id" large /><strong>{{ p.nickname }}</strong
             ><small>{{
-              p.id === "her" ? "风里有一架小飞机" : "追着航迹的企鹅"
+              p.id === "her" ? "风里有只小飞机" : "追着航迹的企鹅"
             }}</small>
           </button>
         </div>
