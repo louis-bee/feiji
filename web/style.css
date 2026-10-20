@@ -965,7 +965,7 @@ button {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 14px;
+  gap: 4px;
   color: #a0a690;
   font-size: 10px;
   letter-spacing: 0.1em;
@@ -3034,7 +3034,7 @@ button {
   }
   .end-note {
     font-size: 9px;
-    gap: 9px;
+    gap: 2px;
   }
   .end-note span {
     width: 23px;

@@ -182,7 +182,7 @@ const featured = computed(() =>
           <div />
           <div><Camera :size="33" stroke-width="1.3" /></div>
         </div>
-        <h3>把喜欢的瞬间，放进这里。</h3>
+        <h3>把喜欢的瞬间，放进这里</h3>
         <p>在相册中点亮收藏，<br />它就会出现在这一页。</p>
         <RouterLink to="/album" class="button secondary"
           >去收藏一个瞬间<ArrowUpRight :size="16"
@@ -191,6 +191,6 @@ const featured = computed(() =>
     </div>
   </section>
   <div class="end-note">
-    <span />不必赶路，我们慢慢记录。<Plane :size="15" /><span />
+    <span />不必赶路，我们慢慢记录<Plane :size="15" /><span />
   </div>
 </template>

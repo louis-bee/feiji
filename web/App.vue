@@ -200,7 +200,7 @@ onUnmounted(() => {
             state.settings.startDate.replaceAll("-", ".")
           }}</span
         >
-        <span>慢慢走，好好记。<ArrowRight :size="12" /></span>
+        <span>慢慢走，好好记<ArrowRight :size="12" /></span>
       </footer>
     </div>
     <nav class="mobile-nav" aria-label="移动端导航">
