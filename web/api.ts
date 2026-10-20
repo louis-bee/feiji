@@ -37,6 +37,7 @@ export async function api<T>(
 export function uploadFile(
   file: File,
   albumId: string | null,
+  date: string,
   onProgress: (progress: number) => void,
   signal: AbortSignal,
 ): Promise<import("../shared/types").Media> {
@@ -76,6 +77,7 @@ export function uploadFile(
     };
     const form = new FormData();
     if (albumId) form.append('albumId', albumId);
+    if (date) form.append('date', date);
     form.append('file', file);
     xhr.send(form);
   });

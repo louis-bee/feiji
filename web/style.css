@@ -2045,6 +2045,7 @@ button {
 }
 .media-stage {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background: #e6ebdf;
@@ -2073,7 +2074,7 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 6px;
 }
 .viewer-footer > span {
   flex: 1;
@@ -2086,7 +2087,6 @@ button {
   font-size: 10px;
   display: block;
   color: #9aa48d;
-  margin-top: 6px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

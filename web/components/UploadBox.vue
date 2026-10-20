@@ -6,6 +6,7 @@ import { state } from "../store";
 import type { Media } from "../../shared/types";
 const props = defineProps<{
   albumId?: string | null;
+  date?: string;
 }>();
 const emit = defineEmits<{
   uploaded: [media: Media];
@@ -37,6 +38,7 @@ async function run() {
       const media = await uploadFile(
         job.file,
         props.albumId || null,
+        props.date || "",
         (p) => {
           job.progress = p;
         },

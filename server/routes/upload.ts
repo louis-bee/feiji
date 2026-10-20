@@ -8,7 +8,8 @@ import type { RouteContext } from "../context";
 import type { StoredMedia } from "../database";
 import { HttpError, fail } from "../errors";
 import { mediaDto, removeFiles } from "../media";
-import { checkAlbum } from "../validate";
+import { todayInZone } from "../../shared/dates";
+import { checkAlbum, required, validDate } from "../validate";
 
 const SUPPORTED_MIME = [
   "image/jpeg",
@@ -38,12 +39,14 @@ export function registerUpload({ app, store, mediaDir }: RouteContext) {
       let mime = "";
       let size = 0;
       let albumId: string | null = null;
+      let date = "";
       let fileFound = false;
       for await (const part of request.parts()) {
         if (part.type === "field") {
-          if (part.fieldname !== "albumId" || typeof part.value !== "string")
-            fail(400, "上传字段不正确");
-          albumId = part.value || null;
+          if (typeof part.value !== "string") fail(400, "上传字段不正确");
+          if (part.fieldname === "albumId") albumId = part.value || null;
+          else if (part.fieldname === "date") date = part.value;
+          else fail(400, "上传字段不正确");
           continue;
         }
         fileFound = true;
@@ -147,6 +150,9 @@ export function registerUpload({ app, store, mediaDir }: RouteContext) {
             ? "video/quicktime"
             : "video/mp4";
       }
+      if (date) validDate(date);
+      const mediaDate =
+        date || todayInZone(required(store.get("settings", "site")).timezone);
       const media: StoredMedia = {
         id,
         kind,
@@ -157,7 +163,7 @@ export function registerUpload({ app, store, mediaDir }: RouteContext) {
         size,
         albumId,
         caption: "",
-        date: null,
+        date: mediaDate,
         featured: false,
         url: `/media/${id}/view`,
         thumbUrl: thumbFile ? `/media/${id}/thumb` : null,
