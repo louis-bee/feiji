@@ -7,9 +7,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "concurrently -k -n api,web \"tsx watch server/index.ts\" \"vite --host 127.0.0.1\"",
+    "dev": "concurrently -k -n api,web \"tsx watch server/index.ts\" \"vite --host 0.0.0.0\"",
     "dev:api": "tsx watch server/index.ts",
-    "dev:web": "vite --host 127.0.0.1",
+    "dev:web": "vite --host 0.0.0.0",
     "typecheck": "vue-tsc --noEmit",
     "build": "pnpm run typecheck && vite build",
     "start": "tsx server/index.ts",
