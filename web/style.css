@@ -2124,7 +2124,6 @@ button {
 .viewer-favorite {
   width: 30px;
   height: 30px;
-  transform: translateY(2px);
   flex-shrink: 0;
   border-radius: 50%;
   display: grid;
