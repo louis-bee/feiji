@@ -56,10 +56,7 @@ async function remove() {
       <Avatar :actor="entry.authorId" />
       <div>
         <strong>{{ profile?.nickname }}</strong>
-        <span
-          >{{ dateLabel(entry.date, true) }}
-          <small v-if="entry.updatedAt !== entry.createdAt">· 已编辑</small>
-        </span>
+        <span>{{ dateLabel(entry.date, true) }}</span>
       </div>
       <div v-if="!compact && actor === entry.authorId" class="entry-actions">
         <button
