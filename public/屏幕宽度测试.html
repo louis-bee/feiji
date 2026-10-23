@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>屏幕宽度测试</title>
+    <style>
+      :root {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        color: #2c403b;
+        background: #f9f7f0;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -webkit-text-size-adjust: 100%;
+        --c1: #36594c;
+        --c2: #2c403b;
+        --c3: #e4e4d8;
+        --c4: #a2443b;
+        --a1: 24px;
+        --a2: 24px;
+        --a3: 0px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      h1 {
+        margin: 0;
+        font-weight: 600;
+        font-size: clamp(25px, 2.5vw, 35px);
+        line-height: 1.5;
+        letter-spacing: 0.02em;
+      }
+      .x {
+        height: calc(100dvh - var(--a3));
+        display: grid;
+        grid-template-columns: 1fr;
+        background: #f9f7f0;
+        overflow: hidden;
+      }
+      .y {
+        background: #e9eddf;
+        padding: 23px var(--a2) 0 var(--a1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .z {
+        margin: 0;
+        padding: 25px 0 25px;
+      }
+      .z h1 {
+        font-size: 31px;
+        line-height: 1.5;
+        margin: 10px 0;
+        letter-spacing: 0.05em;
+      }
+      .z h1 br {
+        display: none;
+      }
+      @media (max-width: 540px) {
+        .z h1 {
+          font-size: 27px;
+        }
+      }
+
+      .g .z {
+        outline: 1px dashed rgba(54, 89, 76, 0.35);
+        outline-offset: 2px;
+      }
+      .z h1.w {
+        background: rgba(162, 68, 59, 0.12);
+        outline: 1px dashed rgba(162, 68, 59, 0.6);
+      }
+
+      .m {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+        visibility: hidden;
+        pointer-events: none;
+        z-index: -1;
+      }
+      .m > span {
+        display: inline-block;
+        white-space: nowrap;
+      }
+
+      .n {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10;
+        background: #fffdf8;
+        border-top: 1px solid var(--c3);
+        box-shadow: 0 -6px 18px #304b3614;
+        padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+        display: grid;
+        gap: 7px;
+        font-size: 12px;
+      }
+      .n1 {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .t {
+        position: relative;
+        padding: 10px 34px 10px 12px;
+        border: 1px solid #dde2cf;
+        border-radius: 10px;
+        background: #f7f8ee;
+        font-size: 11.5px;
+        line-height: 1.75;
+        color: #4d5b49;
+      }
+      .t[hidden] {
+        display: none;
+      }
+      .t strong {
+        display: block;
+        margin-bottom: 2px;
+        font-size: 12px;
+        color: var(--c1);
+      }
+      .t ol {
+        margin: 0;
+        padding-left: 17px;
+      }
+      .t li + li {
+        margin-top: 2px;
+      }
+      .t em {
+        font-style: normal;
+        color: #3f7a4f;
+        font-weight: 600;
+      }
+      .t1 {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 26px;
+        height: 26px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: #8a957d;
+        font-size: 14px;
+        line-height: 1;
+      }
+      .n1 strong {
+        font-size: 13px;
+      }
+      .n1 span {
+        color: #7b897b;
+        font-size: 11px;
+      }
+      .u {
+        display: grid;
+        gap: 4px;
+      }
+      .u > span {
+        color: #63705f;
+        font-size: 11px;
+      }
+      .u b {
+        color: var(--c2);
+        font-size: 12px;
+      }
+      input[type="range"] {
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        accent-color: var(--c1);
+      }
+      .s {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        padding: 8px 10px;
+        background: #f4f6ec;
+        border-radius: 8px;
+      }
+      .s div {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+      }
+      .s small {
+        font-size: 9px;
+        color: #8a957d;
+      }
+      .s b {
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .v {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .v.a {
+        color: #3f7a4f;
+      }
+      .v.b {
+        color: var(--c4);
+      }
+      .q {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .q button {
+        flex: 1 1 auto;
+        min-height: 34px;
+        padding: 6px 10px;
+        border: 1px solid #d9ddcf;
+        border-radius: 8px;
+        background: #fffefb;
+        color: var(--c1);
+        font-size: 11px;
+      }
+      .q button:active {
+        background: #eef1e4;
+      }
+    </style>
+  </head>
+  <body class="g">
+    <main class="x">
+      <div class="y" id="k1">
+        <div class="z" id="k2">
+          <h1 id="k3">一二三四，<br />一二三四五。</h1>
+        </div>
+      </div>
+    </main>
+
+    <section class="n" id="k4">
+      <div class="t" id="k5">
+        <button class="t1" id="k6" type="button" aria-label="关闭">×</button>
+        <strong>怎么测（三步）</strong>
+        <ol>
+          <li>把滑块先拖到<b>最右边</b>，文字会变成两行（红色提示）。</li>
+          <li>
+            再一点点往<b>左</b>拖，拖到红色变成绿色的「单行不换行 ✓」就停手。
+          </li>
+          <li>停在这个位置，<em>截屏</em>发给我。</li>
+        </ol>
+      </div>
+
+      <div class="n1">
+        <strong>左右 padding</strong>
+        <span id="k7">字号 –</span>
+      </div>
+
+      <label class="u">
+        <span>左右 padding：<b id="k8">24</b> px</span>
+        <input id="k9" type="range" min="0" max="60" step="1" value="24" />
+      </label>
+
+      <div class="s">
+        <div><small>屏宽</small><b id="k10">–</b></div>
+        <div><small>可用宽度</small><b id="k11">–</b></div>
+        <div><small>文案宽度</small><b id="k12">–</b></div>
+        <div><small>行数</small><b id="k13">–</b></div>
+      </div>
+
+      <p class="v" id="k14">–</p>
+
+      <div class="q">
+        <button id="k15" type="button">隐藏参考线</button>
+        <button id="k16" type="button">重置 24px</button>
+      </div>
+    </section>
+
+    <div class="m" aria-hidden="true"><span id="k17"></span></div>
+
+    <script>
+      const p1 = document.documentElement;
+      const p2 = document.getElementById("k4");
+      const p3 = document.getElementById("k1");
+      const p4 = document.getElementById("k3");
+      const p5 = document.getElementById("k17");
+      const p6 = document.getElementById("k9");
+      const p7 = document.getElementById("k8");
+      const p8 = document.getElementById("k10");
+      const p9 = document.getElementById("k11");
+      const p10 = document.getElementById("k12");
+      const p11 = document.getElementById("k13");
+      const p12 = document.getElementById("k7");
+      const p13 = document.getElementById("k14");
+      const p14 = document.getElementById("k15");
+      const p15 = document.getElementById("k16");
+      const p16 = document.getElementById("k5");
+      const p17 = document.getElementById("k6");
+
+      const r1 = (o13) => Math.round(o13 * 10) / 10;
+
+      function f1() {
+        const o1 = getComputedStyle(p4);
+        p5.style.fontFamily = o1.fontFamily;
+        p5.style.fontSize = o1.fontSize;
+        p5.style.fontWeight = o1.fontWeight;
+        p5.style.fontStyle = o1.fontStyle;
+        p5.style.letterSpacing = o1.letterSpacing;
+        p5.textContent = p4.textContent.replace(/\s+/g, "");
+        return p5.getBoundingClientRect().width;
+      }
+
+      function f2() {
+        p1.style.setProperty("--a1", p6.value + "px");
+        p1.style.setProperty("--a2", p6.value + "px");
+        p7.textContent = p6.value;
+
+        const o1 = getComputedStyle(p4);
+        const o2 = parseFloat(o1.fontSize);
+        const o3 = o2 * 1.5;
+
+        const o4 = document.documentElement.clientWidth;
+        const o5 = p3.getBoundingClientRect().width;
+        const o6 = p4.getBoundingClientRect();
+        const o7 = o6.width;
+        const o8 = f1();
+        const o9 = Math.max(1, Math.round(o6.height / o3));
+        const o10 = o9 > 1 || o8 > o7 + 0.5;
+
+        p4.classList.toggle("w", o10);
+        p12.textContent = "字号 " + o2 + "px · 行高 1.5";
+
+        p8.textContent = r1(o4) + "px";
+        p9.textContent = r1(o7) + "px";
+        p10.textContent = r1(o8) + "px";
+        p11.textContent = o9 + " 行";
+
+        const o11 = Math.floor((o5 - o8) / 2);
+        const o12 = o5 - o8 <= 0 ? "屏宽比文案窄" : "本机上限 ≤ " + o11 + "px";
+
+        if (o10) {
+          p13.className = "v b";
+          p13.textContent = "✕ 换行了，往左拖一点（" + o12 + "）";
+        } else {
+          p13.className = "v a";
+          p13.textContent = "✓ 单行不换行（" + o12 + "）";
+        }
+      }
+
+      function f3() {
+        p1.style.setProperty("--a3", p2.offsetHeight + "px");
+      }
+
+      p6.addEventListener("input", () => {
+        f2();
+        f3();
+      });
+
+      p14.addEventListener("click", () => {
+        const o14 = document.body.classList.toggle("g");
+        p14.textContent = o14 ? "隐藏参考线" : "显示参考线";
+      });
+
+      p15.addEventListener("click", () => {
+        p6.value = 24;
+        f2();
+      });
+
+      p17.addEventListener("click", () => {
+        p16.hidden = true;
+        f3();
+      });
+
+      window.addEventListener("resize", () => {
+        f2();
+        f3();
+      });
+      window.addEventListener("orientationchange", () =>
+        setTimeout(() => {
+          f2();
+          f3();
+        }, 200),
+      );
+
+      (function f0() {
+        p6.value = 24;
+        void document.body.offsetWidth;
+        f2();
+        f3();
+        if (window.ResizeObserver) {
+          new ResizeObserver(f3).observe(p2);
+        }
+      })();
+    </script>
+  </body>
+</html>

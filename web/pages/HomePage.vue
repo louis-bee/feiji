@@ -168,7 +168,7 @@ const featured = computed(() =>
           v-for="m in featured"
           :key="m.id"
           type="button"
-          class="feature-item"
+          class="featured-item"
           :aria-label="`查看${m.caption || m.name}`"
           @click="viewerId = m.id"
         >
