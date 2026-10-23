@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import {
   ChevronLeft,
@@ -23,6 +23,32 @@ const router = useRouter();
 const route = useRoute();
 const selected = ref(today.value);
 const month = ref(today.value.slice(0, 7));
+const dayPanel = ref<HTMLElement | null>(null);
+
+function scrollToDayPanel() {
+  if (!window.matchMedia("(max-width: 1000px)").matches) return;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  void nextTick(() => {
+    const panel = dayPanel.value;
+    if (!panel) return;
+    const start = window.scrollY;
+    const target = Math.max(0, panel.getBoundingClientRect().top + start - 8);
+    const distance = target - start;
+    if (reduced || Math.abs(distance) < 2) {
+      window.scrollTo(0, target);
+      return;
+    }
+    const duration = 900; // 设置滚动时长
+    const from = performance.now();
+    const step = (now: number) => {
+      const progress = Math.min(1, (now - from) / duration);
+      const eased = 1 - (1 - progress) ** 3;
+      window.scrollTo(0, start + distance * eased);
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
 watch(
   () => route.query.date,
   (value) => {
@@ -66,13 +92,14 @@ function eventsOn(date: string) {
   }
   return result;
 }
-function selectDate(date: string) {
+function selectDate(date: string, options?: { scroll?: boolean }) {
   if (!isDate(date) || date > "2099-12-31") return;
   selected.value = date;
   if (!date.startsWith(month.value)) {
     month.value = date.slice(0, 7);
   }
   void router.replace({ query: { date } });
+  if (options?.scroll && records.value.length) scrollToDayPanel();
 }
 function moveMonth(offset: number) {
   if (!isDate(month.value + "-01")) {
@@ -169,7 +196,7 @@ function keyboard(e: KeyboardEvent, date: string) {
               : ' '
           }${state.entries.some((e) => e.date === date) ? '有记录' : ''}`"
           :aria-pressed="date === today"
-          @click="selectDate(date)"
+          @click="selectDate(date, { scroll: true })"
           @keydown="keyboard($event, date)"
         >
           <span>{{ Number(date.slice(8)) }}</span>
@@ -196,7 +223,7 @@ function keyboard(e: KeyboardEvent, date: string) {
         <span>不必每天写，想记时再来。</span>
       </footer>
     </section>
-    <section class="day-panel">
+    <section ref="dayPanel" class="day-panel">
       <header class="day-heading">
         <div>
           <span class="eyebrow">A PAGE OF OUR STORY</span>
