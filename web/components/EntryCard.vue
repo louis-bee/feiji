@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { Pencil, Trash2, Image as ImageIcon } from "lucide-vue-next";
 import { state, actor, notify } from "../store";
-import { confirmDialog, writeEntry, viewerId } from "../ui";
+import { confirmDialog, writeEntry, openViewer } from "../ui";
 import { api } from "../api";
 import { dateLabel } from "../../shared/dates";
 import type { Entry } from "../../shared/types";
@@ -20,6 +20,10 @@ const media = computed(() =>
     .map((id) => state.media.find((m) => m.id === id))
     .filter((m) => !!m),
 );
+const shown = computed(() =>
+  media.value.slice(0, props.compact ? 3 : undefined),
+);
+const open = (id: string) => openViewer(id, shown.value.map((m) => m.id));
 const deleting = ref(false);
 const error = ref("");
 async function remove() {
@@ -82,11 +86,11 @@ async function remove() {
     </p>
     <div v-if="media.length" :class="['entry-images', { small: compact }]">
       <button
-        v-for="item in media.slice(0, compact ? 3 : media.length)"
+        v-for="item in shown"
         :key="item.id"
         type="button"
         :aria-label="`查看${item.caption || item.name}`"
-        @click="viewerId = item.id"
+        @click="open(item.id)"
       >
         <MediaThumb :media="item" />
       </button>
