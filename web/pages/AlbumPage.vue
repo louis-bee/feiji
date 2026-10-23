@@ -11,7 +11,7 @@ import {
   ArrowUpRight,
 } from "lucide-vue-next";
 import { state, notify, today } from "../store";
-import { confirmDialog, viewerId } from "../ui";
+import { confirmDialog, openViewer } from "../ui";
 import { api } from "../api";
 import { Album, Media } from "../../shared/types";
 import Model from "../components/Model.vue";
@@ -246,7 +246,7 @@ async function deleteMedia(media: Media) {
       <button
         class="photo-open"
         :aria-label="`查看${media.caption || media.name}`"
-        @click="viewerId = media.id"
+        @click="openViewer(media.id)"
       >
         <MediaThumb :media="media" />
       </button>

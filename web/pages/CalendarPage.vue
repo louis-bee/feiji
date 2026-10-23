@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import {
   ChevronLeft,
@@ -23,6 +23,32 @@ const router = useRouter();
 const route = useRoute();
 const selected = ref(today.value);
 const month = ref(today.value.slice(0, 7));
+const dayPanel = ref<HTMLElement | null>(null);
+
+function scrollToDayPanel() {
+  if (!window.matchMedia("(max-width: 1000px)").matches) return;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  void nextTick(() => {
+    const panel = dayPanel.value;
+    if (!panel) return;
+    const start = window.scrollY;
+    const target = Math.max(0, panel.getBoundingClientRect().top + start - 8);
+    const distance = target - start;
+    if (reduced || Math.abs(distance) < 2) {
+      window.scrollTo(0, target);
+      return;
+    }
+    const duration = 900; // 设置滚动时长
+    const from = performance.now();
+    const step = (now: number) => {
+      const progress = Math.min(1, (now - from) / duration);
+      const eased = 1 - (1 - progress) ** 3;
+      window.scrollTo(0, start + distance * eased);
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
 watch(
   () => route.query.date,
   (value) => {
@@ -66,13 +92,14 @@ function eventsOn(date: string) {
   }
   return result;
 }
-function selectDate(date: string) {
+function selectDate(date: string, options?: { scroll?: boolean }) {
   if (!isDate(date) || date > "2099-12-31") return;
   selected.value = date;
   if (!date.startsWith(month.value)) {
     month.value = date.slice(0, 7);
   }
   void router.replace({ query: { date } });
+  if (options?.scroll && records.value.length) scrollToDayPanel();
 }
 function moveMonth(offset: number) {
   if (!isDate(month.value + "-01")) {
@@ -117,77 +144,79 @@ function keyboard(e: KeyboardEvent, date: string) {
   </section>
   <div class="calendar-layout">
     <section class="calendar-panel">
-      <header class="calendar-toolbar">
-        <div>
-          <button
-            class="icon-button"
-            aria-label="上个月"
-            @click="moveMonth(-1)"
+      <div class="calendar-board">
+        <header class="calendar-toolbar">
+          <div>
+            <button
+              class="icon-button"
+              aria-label="上个月"
+              @click="moveMonth(-1)"
+            >
+              <ChevronLeft :size="18" />
+            </button>
+            <button class="text-button" @click="selectDate(today)">今天</button>
+            <button class="icon-button" aria-label="下个月" @click="moveMonth(1)">
+              <ChevronRight :size="18" />
+            </button>
+          </div>
+        </header>
+        <label class="month-picker"
+          >翻到某个月<input
+            type="month"
+            v-model="month"
+            min="1900-01"
+            max="2099-12"
+            aria-label="选择年月"
+        /></label>
+        <div class="week-labels">
+          <span
+            v-for="d in ['一', '二', '三', '四', '五', '六', '日']"
+            :key="d"
+            >{{ d }}</span
           >
-            <ChevronLeft :size="18" />
-          </button>
-          <button class="text-button" @click="selectDate(today)">今天</button>
-          <button class="icon-button" aria-label="下个月" @click="moveMonth(1)">
-            <ChevronRight :size="18" />
+        </div>
+        <div class="calendar-grid" role="group" aria-label="选择日历日期">
+          <button
+            v-for="date in cells"
+            :key="date"
+            :data-date="date"
+            :class="[
+              'calendar-cell',
+              {
+                outside: !date.startsWith(month),
+                selected: date === selected,
+                today: date === today,
+              },
+            ]"
+            :aria-label="`${date}${
+              eventsOn(date).length
+                ? ' ' +
+                  eventsOn(date)
+                    .map((e) => e.title)
+                    .join('、')
+                : ' '
+            }${state.entries.some((e) => e.date === date) ? '有记录' : ''}`"
+            :aria-pressed="date === today"
+            @click="selectDate(date, { scroll: true })"
+            @keydown="keyboard($event, date)"
+          >
+            <span>{{ Number(date.slice(8)) }}</span>
+            <div class="day-marks">
+              <i
+                v-if="state.entries.some((e) => e.date === date)"
+                class="entry-dot"
+              />
+              <Cake
+                v-if="eventsOn(date).some((e) => e.kind === 'birthday')"
+                :size="12"
+              />
+              <Heart
+                v-if="eventsOn(date).some((e) => e.kind === 'event')"
+                :size="12"
+              />
+            </div>
           </button>
         </div>
-      </header>
-      <label class="month-picker"
-        >翻到某个月<input
-          type="month"
-          v-model="month"
-          min="1900-01"
-          max="2099-12"
-          aria-label="选择年月"
-      /></label>
-      <div class="week-labels">
-        <span
-          v-for="d in ['一', '二', '三', '四', '五', '六', '日']"
-          :key="d"
-          >{{ d }}</span
-        >
-      </div>
-      <div class="calendar-grid" role="group" aria-label="选择日历日期">
-        <button
-          v-for="date in cells"
-          :key="date"
-          :data-date="date"
-          :class="[
-            'calendar-cell',
-            {
-              outside: !date.startsWith(month),
-              selected: date === selected,
-              today: date === today,
-            },
-          ]"
-          :aria-label="`${date}${
-            eventsOn(date).length
-              ? ' ' +
-                eventsOn(date)
-                  .map((e) => e.title)
-                  .join('、')
-              : ' '
-          }${state.entries.some((e) => e.date === date) ? '有记录' : ''}`"
-          :aria-pressed="date === today"
-          @click="selectDate(date)"
-          @keydown="keyboard($event, date)"
-        >
-          <span>{{ Number(date.slice(8)) }}</span>
-          <div class="day-marks">
-            <i
-              v-if="state.entries.some((e) => e.date === date)"
-              class="entry-dot"
-            />
-            <Cake
-              v-if="eventsOn(date).some((e) => e.kind === 'birthday')"
-              :size="12"
-            />
-            <Heart
-              v-if="eventsOn(date).some((e) => e.kind === 'event')"
-              :size="12"
-            />
-          </div>
-        </button>
       </div>
       <footer class="calendar-legend">
         <span><i class="entry-dot" />有记录</span>
@@ -196,7 +225,7 @@ function keyboard(e: KeyboardEvent, date: string) {
         <span>不必每天写，想记时再来。</span>
       </footer>
     </section>
-    <section class="day-panel">
+    <section ref="dayPanel" class="day-panel">
       <header class="day-heading">
         <div>
           <span class="eyebrow">A PAGE OF OUR STORY</span>

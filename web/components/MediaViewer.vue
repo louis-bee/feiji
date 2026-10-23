@@ -3,13 +3,19 @@ import { ref, computed, watch, onBeforeUnmount } from "vue";
 import { ChevronLeft, ChevronRight, Heart, X } from "lucide-vue-next";
 import Model from "../components/Model.vue";
 import { state, notify } from "../store";
-import { viewerId } from "../ui";
+import { viewerId, viewerScope } from "../ui";
 import { api } from "../api";
 import type { Media } from "../../shared/types";
 
-const current = computed(() =>
-  state.media.find((m) => m.id === viewerId.value),
-);
+// 本次预览可左右切换的列表：按打开时的范围（如某条日历记录）排序
+const list = computed(() => {
+  if (!viewerScope.value) return state.media;
+  const scoped = viewerScope.value
+    .map((id) => state.media.find((m) => m.id === id))
+    .filter((m): m is Media => !!m);
+  return scoped.length ? scoped : state.media;
+});
+const current = computed(() => state.media.find((m) => m.id === viewerId.value));
 const fullscreen = ref(false);
 const error = ref("");
 const isTouch =
@@ -51,10 +57,12 @@ watch(fullscreen, (open) => {
 });
 onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
 function move(direction: number) {
-  const index = state.media.findIndex((m) => m.id === viewerId.value);
+  const items = list.value;
+  if (!items.length) return;
+  const index = items.findIndex((m) => m.id === viewerId.value);
+  if (index < 0) return;
   viewerId.value =
-    state.media[(index + direction + state.media.length) % state.media.length]
-      ?.id || null;
+    items[(index + direction + items.length) % items.length]?.id || null;
 }
 const toggling = ref(false);
 async function toggleFeatured() {

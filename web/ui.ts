@@ -6,6 +6,12 @@ export const editorOpen = ref(false);
 export const editorEntry = ref<Entry | null>(null);
 export const editorDate = ref("");
 export const viewerId = ref<string | null>(null);
+// 预览时左右切换的范围：为 null 表示全部媒体
+export const viewerScope = ref<string[] | null>(null);
+export function openViewer(id: string, scope: string[] | null = null) {
+  viewerScope.value = scope && scope.length ? [...scope] : null;
+  viewerId.value = id;
+}
 export function writeEntry(date = today.value, entry: Entry | null = null) {
   editorEntry.value = entry;
   editorDate.value = entry?.date || date;

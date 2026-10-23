@@ -49,7 +49,7 @@ export function registerEntries({ app, store }: RouteContext) {
       },
     },
     async (request) => {
-      store.db.transaction(() => {
+      return store.db.transaction(() => {
         const current = required(store.get("entries", request.params.id));
         checkVersion(current, request.body.version);
         checkEntry(store, request.body);

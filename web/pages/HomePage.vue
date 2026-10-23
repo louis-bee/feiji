@@ -11,7 +11,7 @@ import {
   ImagePlus,
 } from "lucide-vue-next";
 import { state, today, togetherDays, names, displayEvents } from "../store";
-import { writeEntry, viewerId } from "../ui";
+import { writeEntry, openViewer } from "../ui";
 import { dateLabel } from "../../shared/dates";
 import Avatar from "../components/Avatar.vue";
 import JourneyArt from "../components/JourneyArt.vue";
@@ -168,9 +168,9 @@ const featured = computed(() =>
           v-for="m in featured"
           :key="m.id"
           type="button"
-          class="feature-item"
+          class="featured-item"
           :aria-label="`查看${m.caption || m.name}`"
-          @click="viewerId = m.id"
+          @click="openViewer(m.id)"
         >
           <MediaThumb :media="m" /><span>{{
             m.caption || "一个喜欢的瞬间"
