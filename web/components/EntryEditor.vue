@@ -6,7 +6,7 @@ import UploadBox from "../components/UploadBox.vue";
 import MediaThumb from "../components/MediaThumb.vue";
 import { state, actor, notify, today } from "../store";
 import { api } from "../api";
-import type { Entry } from "../../shared/types";
+import type { Entry, Media } from "../../shared/types";
 import { confirmDialog, editorOpen, editorDate, editorEntry } from "../ui";
 
 const original = editorEntry.value;
@@ -46,6 +46,33 @@ function toggle(id: string) {
     ? mediaIds.value.filter((value) => value !== id)
     : [...mediaIds.value, id];
 }
+// 本次编辑中上传的媒体
+const uploadedIds: string[] = [];
+function onUploaded(media: Media) {
+  if (!uploadedIds.includes(media.id)) uploadedIds.push(media.id);
+  if (!mediaIds.value.includes(media.id)) mediaIds.value.push(media.id);
+}
+// 把这些媒体的日期对齐到记录日期
+async function syncMediaDates(ids: Iterable<string>, target: string) {
+  for (const id of new Set(ids)) {
+    const media = state.media.find((item) => item.id === id);
+    if (!media || media.date === target) continue;
+    try {
+      const updated = await api<Media>(`/api/media/${id}`, "PATCH", {
+        albumId: media.albumId,
+        caption: media.caption,
+        date: target,
+        featured: media.featured,
+        version: media.version,
+      });
+      state.media = state.media.map((item) =>
+        item.id === updated.id ? updated : item,
+      );
+    } catch {
+      // 日期同步失败不影响记录本身，媒体仍保留在相册中
+    }
+  }
+}
 async function save() {
   if (!date.value) {
     error.value = "请选择记录日期。";
@@ -73,6 +100,9 @@ async function save() {
       result,
       ...state.entries.filter((e) => e.id !== result.id),
     ].sort((a, b) => b.date.localeCompare(a.date));
+    // 日期改动过时，这条记录下的所有照片/视频一起改到新日期
+    const movedDate = !!original && original.date !== date.value;
+    await syncMediaDates(movedDate ? mediaIds.value : uploadedIds, date.value);
     notify("这一刻，已经好好记下了");
     editorOpen.value = false;
   } catch (e) {
@@ -143,7 +173,8 @@ onBeforeUnmount(() => {
         </button>
       </div>
       <UploadBox
-        @uploaded="(m) => mediaIds.push(m.id)"
+        :date="date"
+        @uploaded="onUploaded"
         @busy="uploading = $event"
       />
       <button
