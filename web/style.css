@@ -1162,9 +1162,6 @@ button {
   display: flex;
   align-items: center;
 }
-.calendar-toolbar .icon-button {
-  width: 32px;
-}
 .calendar-toolbar .text-button {
   font-size: 11px;
   padding: 0 8px;
@@ -3315,7 +3312,6 @@ button {
   color: #65715f;
 }
 @media (max-width: 760px) {
-  .icon-button,
   .top-actions .icon-button {
     min-height: 44px;
   }
