@@ -62,4 +62,7 @@ router.afterEach((to) => {
   document.title = `${String(to.meta.title || "双人飞行日志")} - 双人飞行日志`;
 });
 
+// iOS Safari 只有在元素或祖先绑定了触摸事件时才会触发 :active
+document.addEventListener("touchstart", () => {}, { passive: true });
+
 createApp(App).use(router).mount("#app");
