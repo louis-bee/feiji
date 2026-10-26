@@ -1,8 +1,8 @@
 ---
-description: 本项目发版流程。把 master 上的发布点聚合（squash）成 release 分支上的一个版本 commit。当用户提到发版、发布新版本、release、打版本、切版本时使用。
+description: 本项目发版流程。在 release 分支用 merge --no-ff 把 master 上的发布点合成一个版本 commit（信息可自定义）。当用户提到发版、发布新版本、release、打版本、切版本时使用。
 alwaysApply: false
 enabled: true
-updatedAt: 2026-10-20T00:00:00.000Z
+updatedAt: 2026-10-27T00:00:00.000Z
 provider:
 ---
 
@@ -11,69 +11,59 @@ provider:
 ## 分支模型
 
 - `master`：日常开发分支，提交粒度随意（"进度30%"、fix、refactor 等）。
-- `release`：**孤儿分支**，与 master 无血缘关系。每个 commit = 一个已发布版本，commit 的树直接取自 master 上的发布点。
-  - 因为是快照式记录，相邻两个 release commit 的 diff 天然等于"上一版本至今的全部改动"，即 squash 效果。
-  - **不要用 `git merge --squash master`**：squash commit 不是 merge commit，merge-base 不会前进，第二次 squash 会重复合并旧改动并冲突。
-- 版本号遵循 `package.json` 的 `version` 字段，发版时两个地方必须一致。
+- `release`：**与 master 同源**的版本分支。每个版本 = release 上一条 `git merge --no-ff` 产生的 merge commit，提交信息自定义（通常是版本号）。
+  - master 的提交通过 merge 的第二个父提交进入 release，`git log --oneline --first-parent release` 只看版本线。
+  - 相邻两个版本的 diff（`git diff v1.1.1 v1.1.2 --stat`）即"上一版本至今的全部改动"。
+  - **禁止 `git merge --squash`**：squash commit 不记录父提交，merge-base 不会前进，下一次会重复聚合旧改动并冲突。
+  - 起点：`git switch -C release master`（v1.1.1 时由孤儿分支改为同源分支，旧孤儿历史保留在 `bak/release-orphan` 分支和 tag 上）。
+- 版本号遵循 `package.json` 的 `version` 字段：脚本参数、package.json、tag 三处必须一致。
 
-## 一、首次初始化（release 分支已存在则跳过）
-
-以 v0.1.1 的发布点 `cd342a3` 为例：
-
-```powershell
-git switch --orphan release
-git read-tree --reset -u cd342a3     # 用发布点的整棵树覆盖索引和工作区
-git commit -m "release: v0.1.1 (from cd342a3)"
-git tag -a v0.1.1 -m "release v0.1.1"
-git switch master
-```
-
-## 二、每次发版步骤（v0.2.0 为例）
+## 每次发版步骤（v1.1.2 为例）
 
 1. **在 master 上完成发布准备**：功能合入、`package.json` 的 `version` 改为新版本号、`pnpm build` / `pnpm typecheck` 通过，提交到 master。
 2. **确认发布点**：通常是 master 的 HEAD（`git log --oneline -1 master`），也可以指定某个 commit。
 3. **执行脚本**（仓库根目录，PowerShell）：
 
 ```powershell
-.\scripts\release.ps1 -Version v0.2.0                 # 发布点 = master HEAD
-.\scripts\release.ps1 -Version v0.2.0 -Source abc1234 # 指定发布点
-.\scripts\release.ps1 -Version v0.2.0 -DryRun         # 只看将被聚合的 commit 清单，不改动
+.\scripts\release.ps1 -Version v1.1.2                            # 发布点 = master HEAD
+.\scripts\release.ps1 -Version v1.1.2 -Source abc1234            # 指定发布点
+.\scripts\release.ps1 -Version v1.1.2 -Message "v1.1.2 日历优化" # 自定义版本 commit 信息
+.\scripts\release.ps1 -Version v1.1.2 -DryRun                    # 只看将被聚合的 commit 清单
 ```
 
-脚本做的事：检查工作区干净 → 检查 release 分支与 tag 重复 → 打印将被聚合的 commit 清单 → `git read-tree --reset -u <发布点>` → `git commit -m "release: v0.2.0 (from <短hash>)"` → `git tag -a v0.2.0` → 切回原分支。
+脚本做的事：检查已跟踪文件无未提交改动 → 检查 release 存在、tag 未重复 → 校验 package.json 版本号 → 打印将被聚合的 commit 清单 → `git switch release` → `git merge --no-ff -m "<信息>" <发布点>` → `git tag -a <版本>` → 切回原分支。
 
-4. **人工核对**：`git log --oneline release`、`git diff v0.1.1 v0.2.0 --stat`。
+4. **人工核对**：`git log --oneline --first-parent release`、`git diff v1.1.1 v1.1.2 --stat`。
 
 等价的手工命令（脚本出问题时的兜底）：
 
 ```powershell
 git switch release
-git read-tree --reset -u master
-git commit -m "release: v0.2.0 (from <短hash>)"
-git tag -a v0.2.0 -m "release v0.2.0"
+git merge --no-ff master        # 编辑器里把默认信息改成版本号，如 "v1.1.2 (from abc1234)"
+git tag -a v1.1.2 -m "v1.1.2"
 git switch master
 ```
 
-## 三、约束
+## 约束
 
 - **不 push**：release 分支与 tag 只保留在本地，任何步骤都不要执行 `git push`（包括 `--follow-tags`）。用户明确要求时才推。
-- 不在 `release` 分支上开发或改代码，它只做版本快照。
+- 不在 `release` 分支上开发或改代码，代码改动一律在 master；release 只承载版本 commit。
 - 紧急修复：在 master 上改 → 走一次发版（生成新版本 commit）。
-- `git read-tree --reset -u` 会丢弃未提交改动，执行前必须保证工作区干净。
-- 生成 CHANGELOG 用源分支区间：`git log --oneline <上一发布点>..<本次发布点>`；上一发布点可从 release 分支最后一条 commit message 的 `(from xxxxxxx)` 中读取。
+- 合并冲突极少出现（release 不独立改动）。一旦出现：解决后 `git commit` 完成发版，或 `git merge --abort` 放弃。
+- 生成 CHANGELOG 用源分支区间：`git log --oneline <上一发布点>..<本次发布点>`；发版前上一发布点 = `git merge-base release master`，已发的版本可从版本 commit 信息里的 `(from xxxxxxx)` 读取。
 
-## 四、撤销
+## 撤销
 
 刚打完的版本写错了（未 push）：
 
 ```powershell
 git switch release
 git reset --hard HEAD~1
-git tag -d v0.2.0
+git tag -d v1.1.2
 git switch master
 ```
 
-## 五、参考
+## 参考
 
 - 脚本：`scripts/release.ps1`
-- 当前版本线：`v0.1.1`（发布点 cd342a3）
+- 当前版本线：`v1.1.1`（发布点 `ad93308`）；release 已于该版本起改为与 master 同源。
