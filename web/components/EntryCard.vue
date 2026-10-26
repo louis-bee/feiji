@@ -11,6 +11,7 @@ import MediaThumb from "./MediaThumb.vue";
 const props = defineProps<{
   entry: Entry;
   compact?: boolean;
+  unread?: boolean;
 }>();
 const profile = computed(() =>
   state.profiles.find((p) => p.id === props.entry.authorId),
@@ -66,6 +67,12 @@ async function remove() {
 
 <template>
   <article :class="['entry-card', { compact }]">
+    <span
+      v-if="unread"
+      :class="['entry-unread-dot', entry.authorId]"
+      role="img"
+      aria-label="这条记录还没看"
+    />
     <header>
       <Avatar :actor="entry.authorId" />
       <div>

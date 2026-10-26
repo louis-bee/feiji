@@ -1,3 +1,5 @@
+import { SESSION_KEY } from "./config";
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -5,6 +7,17 @@ export class ApiError extends Error {
   ) {
     super(message);
   }
+}
+
+/** 把当前操作者身份带给后端，供访问日志使用。 */
+export function actorHeader(): Record<string, string> {
+  try {
+    const value = sessionStorage.getItem(SESSION_KEY);
+    if (value === "her" || value === "him") return { "X-Actor": value };
+  } catch {
+    // 隐私模式下 sessionStorage 不可用，忽略即可。
+  }
+  return {};
 }
 
 export async function api<T>(
@@ -16,8 +29,10 @@ export async function api<T>(
   try {
     response = await fetch(path, {
       method,
-      headers:
-        body === undefined ? undefined : { 'Content-Type': 'application/json' },
+      headers: {
+        ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+        ...actorHeader(),
+      },
       body: body === undefined ? undefined : JSON.stringify(body),
       signal: AbortSignal.timeout(30_000),
     });
@@ -51,6 +66,8 @@ export function uploadFile(
     }
     signal.addEventListener('abort', absort, { once: true });
     xhr.open("POST", "/api/uploads");
+    for (const [name, value] of Object.entries(actorHeader()))
+      xhr.setRequestHeader(name, value);
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable)
         onProgress(Math.round((e.loaded / e.total) * 100));

@@ -21,6 +21,13 @@ export interface Entry {
   createdAt: string;
   updatedAt: string;
 }
+/** 一方对另一方某条记录的已读标记，version 对应读到的记录版本 */
+export interface EntryRead {
+  actorId: Actor;
+  entryId: string;
+  version: number;
+  readAt: string;
+}
 export interface Media {
   id: string;
   kind: "image" | "video";
@@ -59,6 +66,7 @@ export interface Bootstrap {
   media: Media[];
   albums: Album[];
   events: EventItem[];
+  reads: EntryRead[];
 }
 export interface DisplayEvent extends EventItem {
   builtIn: boolean;

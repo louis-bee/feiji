@@ -9,7 +9,13 @@ import {
   Heart,
   Cake,
 } from "lucide-vue-next";
-import { state, today } from "../store";
+import {
+  state,
+  today,
+  hasUnreadOn,
+  markDateRead,
+  unreadEntries,
+} from "../store";
 import { writeEntry } from "../ui";
 import {
   dateLabel,
@@ -66,6 +72,31 @@ const records = computed(() =>
     .filter((e) => e.date === selected.value)
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
 );
+// 翻页箭头的底色提示：哪一侧还有没看的月份，按钮就亮起来，颜色跟着记录是谁写的
+function unreadRolesIn(test: (month: string) => boolean) {
+  const roles = new Set<Actor>();
+  for (const entry of unreadEntries.value) {
+    if (test(entry.date.slice(0, 7))) roles.add(entry.authorId);
+  }
+  return roles;
+}
+function navClass(roles: Set<Actor>) {
+  if (roles.size === 0) return "";
+  if (roles.size > 1) return "unread-both";
+  return roles.has("him") ? "unread-him" : "unread-her";
+}
+const prevUnread = computed(() => unreadRolesIn((item) => item < month.value));
+const nextUnread = computed(() => unreadRolesIn((item) => item > month.value));
+const prevNavClass = computed(() => navClass(prevUnread.value));
+const nextNavClass = computed(() => navClass(nextUnread.value));
+// 选中某一天就等于看过那天的记录，顺手清掉它的未读
+watch(
+  records,
+  () => {
+    if (records.value.length) void markDateRead(selected.value);
+  },
+  { immediate: true, flush: "post" },
+);
 function eventsOn(date: string) {
   const result: { title: string; kind: "birthday" | "event" }[] = [];
   for (const p of state.profiles) {
@@ -104,6 +135,12 @@ function entryNote(date: string) {
     .filter((p) => hasEntryFrom(date, p.id))
     .map((p) => p.nickname);
   return names.length ? `${names.join("、")}有记录` : "";
+}
+function unreadNote(date: string) {
+  const names = state.profiles
+    .filter((p) => hasUnreadOn(date, p.id))
+    .map((p) => p.nickname);
+  return names.length ? `，${names.join("、")}有未读` : "";
 }
 function selectDate(date: string, options?: { scroll?: boolean }) {
   if (!isDate(date) || date > "2099-12-31") return;
@@ -161,14 +198,18 @@ function keyboard(e: KeyboardEvent, date: string) {
         <header class="calendar-toolbar">
           <div>
             <button
-              class="icon-button"
-              aria-label="上个月"
+              :class="['icon-button', prevNavClass]"
+              :aria-label="prevUnread.size ? '上个月，还有未读' : '上个月'"
               @click="moveMonth(-1)"
             >
               <ChevronLeft :size="18" />
             </button>
             <button class="text-button" @click="selectDate(today)">今天</button>
-            <button class="icon-button" aria-label="下个月" @click="moveMonth(1)">
+            <button
+              :class="['icon-button', nextNavClass]"
+              :aria-label="nextUnread.size ? '下个月，还有未读' : '下个月'"
+              @click="moveMonth(1)"
+            >
               <ChevronRight :size="18" />
             </button>
           </div>
@@ -208,7 +249,7 @@ function keyboard(e: KeyboardEvent, date: string) {
                     .map((e) => e.title)
                     .join('、')
                 : ' '
-            }${entryNote(date)}`"
+            }${entryNote(date)}${unreadNote(date)}`"
             :aria-pressed="date === today"
             @click="selectDate(date, { scroll: true })"
             @keydown="keyboard($event, date)"
@@ -217,12 +258,20 @@ function keyboard(e: KeyboardEvent, date: string) {
             <div class="day-marks">
               <i
                 v-if="hasEntryFrom(date, 'her')"
-                class="entry-dot her"
+                :class="[
+                  'entry-dot',
+                  'her',
+                  { unread: hasUnreadOn(date, 'her') },
+                ]"
                 aria-hidden="true"
               />
               <i
                 v-if="hasEntryFrom(date, 'him')"
-                class="entry-dot him"
+                :class="[
+                  'entry-dot',
+                  'him',
+                  { unread: hasUnreadOn(date, 'him') },
+                ]"
                 aria-hidden="true"
               />
               <Cake

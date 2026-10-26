@@ -10,7 +10,15 @@ import {
   CalendarDays,
   ImagePlus,
 } from "lucide-vue-next";
-import { state, today, togetherDays, names, displayEvents } from "../store";
+import {
+  state,
+  today,
+  togetherDays,
+  names,
+  displayEvents,
+  isUnread,
+  unreadEntries,
+} from "../store";
 import { writeEntry, openViewer } from "../ui";
 import { dateLabel } from "../../shared/dates";
 import Avatar from "../components/Avatar.vue";
@@ -33,6 +41,22 @@ const recent = computed(() =>
 );
 const featured = computed(() =>
   state.media.filter((m) => m.featured).slice(0, 4),
+);
+// 未读按人分开计数，圆点颜色跟着是谁的记录走
+const unreadByRole = computed(() =>
+  state.profiles
+    .map((profile) => ({
+      id: profile.id,
+      nickname: profile.nickname,
+      count: unreadEntries.value.filter((e) => e.authorId === profile.id)
+        .length,
+    }))
+    .filter((item) => item.count > 0),
+);
+const unreadLabel = computed(() =>
+  unreadByRole.value
+    .map((item) => `${item.nickname} ${item.count} 条未读`)
+    .join("，"),
 );
 </script>
 
@@ -130,7 +154,22 @@ const featured = computed(() =>
       <div class="section-heading">
         <div>
           <span class="eyebrow">RECENT PAGES</span>
-          <h2>最近留下的几笔</h2>
+          <h2 class="recent-heading">
+            最近留下的几笔<span
+              v-if="unreadByRole.length"
+              class="unread-badges"
+              role="status"
+              :aria-label="unreadLabel"
+            >
+              <span
+                v-for="item in unreadByRole"
+                :key="item.id"
+                :class="['unread-badge', item.id]"
+                :title="`${item.nickname}新写或改动了 ${item.count} 条记录`"
+                >{{ item.count }}</span
+              >
+            </span>
+          </h2>
         </div>
         <RouterLink to="/calendar" class="text-button"
           >翻翻日历<ArrowRight :size="15"
@@ -141,6 +180,7 @@ const featured = computed(() =>
           v-for="entry in recent"
           :key="entry.id"
           :entry="entry"
+          :unread="isUnread(entry)"
           compact
         />
       </div>

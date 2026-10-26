@@ -17,5 +17,6 @@ export function registerBootstrap({ app, store }: RouteContext) {
     media: store.list("media").reverse().map(mediaDto),
     albums: store.list("albums"),
     events: store.list("events"),
+    reads: store.list("reads"),
   }));
 }

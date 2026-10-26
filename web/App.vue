@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
   Plane,
@@ -31,12 +31,12 @@ import Avatar from "./components/Avatar.vue";
 import ConfirmDialog from "./components/ConfirmDialog.vue";
 import EntryEditor from "./components/EntryEditor.vue";
 import MediaViewer from "./components/MediaViewer.vue";
-import BirthdaySplash from "./components/BirthdaySplash.vue";
-import { splashMode, type SplashMode } from "./birthday";
+// 暂时没有开屏在档期：注释掉就不会把开屏代码打进包。
+// 要恢复时，放开这里和模板里的 <SplashHost /> 即可。
+// import SplashHost from "./components/SplashHost.vue";
 
 const route = useRoute();
 const router = useRouter();
-const splash = ref<SplashMode | null>(splashMode(state.settings.timezone));
 const links = [
   { to: "/", text: "首页", icon: House },
   { to: "/calendar", text: "日历", icon: CalendarDays },
@@ -94,7 +94,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <BirthdaySplash v-if="splash" :mode="splash" @done="splash = null" />
+  <!-- <SplashHost /> -->
   <Transition name="shell-swap" mode="out-in">
     <RouterView v-if="route.path === '/login'" key="login" />
     <div v-else class="app-shell" key="shell">
