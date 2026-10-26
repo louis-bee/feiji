@@ -9,6 +9,9 @@
   .\scripts\release.ps1 -Version v1.1.2 -DryRun                    # 只预览将被聚合的 commit 清单，不改动
 
 说明：release 是独立历史的**快照分支**，每个 commit = 一个已发布版本的完整树。
+      默认 commit 信息 = 发布点 commit 的信息 + " (from <发布点短hash>)"，
+      所以发布点的 master 提交信息请写成 "v1.1.2 日历优化"，release 上即为
+      "v1.1.2 日历优化 (from 1bba3d0)"。
       发版 = 用发布点的整棵树生成一个 commit，因此相邻两版 diff 就是本版全部改动（squash 效果）。
       不要改成 `git merge --squash` / `merge --no-ff`：前者 merge-base 不前进会重复聚合，后者会把
       master 的提交历史带进 release，破坏"一版一 commit"。
@@ -88,13 +91,21 @@ else {
   Write-Host "无法确定上一发布点，跳过区间预览（可用 -Base 指定）。" -ForegroundColor Yellow
 }
 
+# 默认信息 = 发布点 commit 的信息 + (from 短hash)，前半部分直接沿用 master 的提交信息
+$subject = (git log -1 --format=%s $src).Trim()
+if (-not $subject.StartsWith($Version)) {
+  Write-Host "提示：发布点 $short 的提交信息「$subject」未以 $Version 开头，将自动补上版本号。" -ForegroundColor Yellow
+  $subject = "$Version $subject"
+}
+$msg = if ($Message) { $Message } else { "$subject (from $short)" }
+Write-Host "版本 commit 信息：$msg" -ForegroundColor Cyan
+
 if ($DryRun) {
   Write-Host "`nDryRun：未做任何改动。" -ForegroundColor Yellow
   exit 0
 }
 
 # ---------- 4. 生成版本快照 commit ----------
-$msg = if ($Message) { $Message } else { "$Version (from $short)" }
 $current = (git branch --show-current).Trim()
 
 git switch release

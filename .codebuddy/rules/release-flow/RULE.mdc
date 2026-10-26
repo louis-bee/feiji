@@ -48,7 +48,7 @@ git switch master
 
 脚本做的事：检查已跟踪文件无未提交改动 → 检查 release 存在、tag 未重复 → 校验 package.json 版本号 → 判断内容是否与 release 当前版本相同（相同则拒绝发版）→ 解析上一发布点并打印聚合清单 → `git switch release` → `git read-tree --reset -u <发布点>` → `git commit -m "<信息>"` → `git tag -a <版本>` → 切回原分支。
 
-默认信息为 `v1.1.2 (from abc1234)`，**建议保留 `(from xxxxxxx)` 尾巴**：下一版靠它自动识别上一发布点来算聚合区间；解析失败时脚本会退化为"在 master 历史里找树相同的 commit"，再失败则需手动 `-Base`。
+默认信息 = **发布点 commit 的信息 + ` (from <发布点短hash>)`**。所以在 master 上把发布点提交信息写成 `v1.1.2 日历优化`，release 上就会得到 `v1.1.2 日历优化 (from abc1234)`；若发布点信息没以版本号开头，脚本会自动补上版本号前缀。**不要删掉 `(from xxxxxxx)` 尾巴**：下一版靠它自动识别上一发布点来算聚合区间；解析失败时脚本会退化为"在 master 历史里找树相同的 commit"，再失败则需手动 `-Base`。
 
 4. **人工核对**：`git log --oneline release`、`git diff v1.1.1 v1.1.2 --stat`。
 
@@ -57,8 +57,8 @@ git switch master
 ```powershell
 git switch release
 git read-tree --reset -u master
-git commit -m "v1.1.2 (from abc1234)"
-git tag -a v1.1.2 -m "v1.1.2 (from abc1234)"
+git commit -m "v1.1.2 日历优化 (from abc1234)"
+git tag -a v1.1.2 -m "v1.1.2 日历优化 (from abc1234)"
 git switch master
 ```
 
