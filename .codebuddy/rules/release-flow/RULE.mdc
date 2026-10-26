@@ -1,8 +1,8 @@
 ---
-description: 本项目发版流程。把 master 上的发布点聚合（squash）成 release 分支上的一个版本 commit。当用户提到发版、发布新版本、release、打版本、切版本时使用。
+description: 本项目发版流程。release 是独立历史的快照分支，每个版本一个 commit（squash 效果），信息可自定义。当用户提到发版、发布新版本、release、打版本、切版本时使用。
 alwaysApply: false
 enabled: true
-updatedAt: 2026-10-20T00:00:00.000Z
+updatedAt: 2026-10-27T00:00:00.000Z
 provider:
 ---
 
@@ -11,10 +11,13 @@ provider:
 ## 分支模型
 
 - `master`：日常开发分支，提交粒度随意（"进度30%"、fix、refactor 等）。
-- `release`：**孤儿分支**，与 master 无血缘关系。每个 commit = 一个已发布版本，commit 的树直接取自 master 上的发布点。
-  - 因为是快照式记录，相邻两个 release commit 的 diff 天然等于"上一版本至今的全部改动"，即 squash 效果。
-  - **不要用 `git merge --squash master`**：squash commit 不是 merge commit，merge-base 不会前进，第二次 squash 会重复合并旧改动并冲突。
-- 版本号遵循 `package.json` 的 `version` 字段，发版时两个地方必须一致。
+- `release`：**独立历史（孤儿）的快照分支**，与 master 无共同祖先。每个 commit = 一个已发布版本的完整树，因此：
+  - 相邻两个版本 commit 的 diff（`git diff v1.1.1 v1.1.2 --stat`）天然等于"本版本的全部改动"，即 squash 效果；
+  - `git log --oneline release` 就是一条干净的版本线，不混入 master 的日常提交。
+- 两种被否决的写法：
+  - `git merge --squash`：squash commit 不记录父提交，merge-base 不前进，第二次会重复聚合旧改动并冲突；
+  - `git merge --no-ff`：能让 merge-base 前进，但会把 master 的全部提交历史带进 release，破坏"一版一 commit"。
+- 版本号遵循 `package.json` 的 `version` 字段：脚本参数、package.json、tag 三处必须一致。
 
 ## 一、首次初始化（release 分支已存在则跳过）
 
@@ -23,44 +26,49 @@ provider:
 ```powershell
 git switch --orphan release
 git read-tree --reset -u cd342a3     # 用发布点的整棵树覆盖索引和工作区
-git commit -m "release: v0.1.1 (from cd342a3)"
-git tag -a v0.1.1 -m "release v0.1.1"
+git commit -m "v0.1.1 (from cd342a3)"
+git tag -a v0.1.1 -m "v0.1.1 (from cd342a3)"
 git switch master
 ```
 
-## 二、每次发版步骤（v0.2.0 为例）
+## 二、每次发版步骤（v1.1.2 为例）
 
 1. **在 master 上完成发布准备**：功能合入、`package.json` 的 `version` 改为新版本号、`pnpm build` / `pnpm typecheck` 通过，提交到 master。
-2. **确认发布点**：通常是 master 的 HEAD（`git log --oneline -1 master`），也可以指定某个 commit。
+2. **确认发布点**：通常是 master 的 HEAD（`git log --oneline -1 master`），也可指定某个 commit。
 3. **执行脚本**（仓库根目录，PowerShell）：
 
 ```powershell
-.\scripts\release.ps1 -Version v0.2.0                 # 发布点 = master HEAD
-.\scripts\release.ps1 -Version v0.2.0 -Source abc1234 # 指定发布点
-.\scripts\release.ps1 -Version v0.2.0 -DryRun         # 只看将被聚合的 commit 清单，不改动
+.\scripts\release.ps1 -Version v1.1.2                            # 发布点 = master HEAD
+.\scripts\release.ps1 -Version v1.1.2 -Source abc1234            # 指定发布点
+.\scripts\release.ps1 -Version v1.1.2 -Message "v1.1.2 日历优化" # 自定义版本 commit 信息
+.\scripts\release.ps1 -Version v1.1.2 -Edit                      # 打开编辑器写信息（预填默认信息）
+.\scripts\release.ps1 -Version v1.1.2 -Base abc1234              # 上一发布点自动解析失败时显式指定
+.\scripts\release.ps1 -Version v1.1.2 -DryRun                    # 只看将被聚合的 commit 清单
 ```
 
-脚本做的事：检查工作区干净 → 检查 release 分支与 tag 重复 → 打印将被聚合的 commit 清单 → `git read-tree --reset -u <发布点>` → `git commit -m "release: v0.2.0 (from <短hash>)"` → `git tag -a v0.2.0` → 切回原分支。
+脚本做的事：检查已跟踪文件无未提交改动 → 检查 release 存在、tag 未重复 → 校验 package.json 版本号 → 判断内容是否与 release 当前版本相同（相同则拒绝发版）→ 解析上一发布点并打印聚合清单 → `git switch release` → `git read-tree --reset -u <发布点>` → `git commit -m "<信息>"` → `git tag -a <版本>` → 切回原分支。
 
-4. **人工核对**：`git log --oneline release`、`git diff v0.1.1 v0.2.0 --stat`。
+默认信息 = **发布点 commit 的信息 + ` (from <发布点短hash>)`**。所以在 master 上把发布点提交信息写成 `v1.1.2 日历优化`，release 上就会得到 `v1.1.2 日历优化 (from abc1234)`；若发布点信息没以版本号开头，脚本会自动补上版本号前缀。**不要删掉 `(from xxxxxxx)` 尾巴**：下一版靠它自动识别上一发布点来算聚合区间；解析失败时脚本会退化为"在 master 历史里找树相同的 commit"，再失败则需手动 `-Base`。
+
+4. **人工核对**：`git log --oneline release`、`git diff v1.1.1 v1.1.2 --stat`。
 
 等价的手工命令（脚本出问题时的兜底）：
 
 ```powershell
 git switch release
 git read-tree --reset -u master
-git commit -m "release: v0.2.0 (from <短hash>)"
-git tag -a v0.2.0 -m "release v0.2.0"
+git commit -m "v1.1.2 日历优化 (from abc1234)"
+git tag -a v1.1.2 -m "v1.1.2 日历优化 (from abc1234)"
 git switch master
 ```
 
 ## 三、约束
 
 - **不 push**：release 分支与 tag 只保留在本地，任何步骤都不要执行 `git push`（包括 `--follow-tags`）。用户明确要求时才推。
-- 不在 `release` 分支上开发或改代码，它只做版本快照。
+- 不在 `release` 分支上开发或改代码，代码改动一律在 master；release 只做版本快照。
 - 紧急修复：在 master 上改 → 走一次发版（生成新版本 commit）。
-- `git read-tree --reset -u` 会丢弃未提交改动，执行前必须保证工作区干净。
-- 生成 CHANGELOG 用源分支区间：`git log --oneline <上一发布点>..<本次发布点>`；上一发布点可从 release 分支最后一条 commit message 的 `(from xxxxxxx)` 中读取。
+- `git read-tree --reset -u` 会丢弃已跟踪文件的未提交改动，执行前必须保证工作区干净（未跟踪文件不受影响）。
+- 生成 CHANGELOG 用源分支区间：`git log --oneline <上一发布点>..<本次发布点>`；上一发布点从上一版 commit 信息的 `(from xxxxxxx)` 读取。
 
 ## 四、撤销
 
@@ -69,11 +77,12 @@ git switch master
 ```powershell
 git switch release
 git reset --hard HEAD~1
-git tag -d v0.2.0
+git tag -d v1.1.2
 git switch master
 ```
 
 ## 五、参考
 
 - 脚本：`scripts/release.ps1`
-- 当前版本线：`v0.1.1`（发布点 cd342a3）
+- 当前版本线：`v1.1.1`（发布点 `ad93308`），快照 commit `ab95471`。
+- 历史备注：2026-10-27 曾试验"release 与 master 同源 + `merge --no-ff`"，因历史混入 master 提交而回退到快照模型；旧同源分支遗留的备份 `bak/release-orphan` 即当前 release 的祖先链。
