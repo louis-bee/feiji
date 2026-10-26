@@ -23,7 +23,21 @@ const media = computed(() =>
 const shown = computed(() =>
   media.value.slice(0, props.compact ? 3 : undefined),
 );
-const open = (id: string) => openViewer(id, shown.value.map((m) => m.id));
+const open = (id: string) =>
+  openViewer(
+    id,
+    shown.value.map((m) => m.id),
+  );
+const editedLabel = computed(() => {
+  const date = new Date(props.entry.updatedAt);
+  if (Number.isNaN(date.getTime())) return dateLabel(props.entry.date, true);
+  return new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+});
 const deleting = ref(false);
 const error = ref("");
 async function remove() {
@@ -56,7 +70,8 @@ async function remove() {
       <Avatar :actor="entry.authorId" />
       <div>
         <strong>{{ profile?.nickname }}</strong>
-        <span>{{ dateLabel(entry.date, true) }}</span>
+        <span v-if="compact">{{ dateLabel(entry.date, true) }}</span>
+        <span v-else>编辑于 {{ editedLabel }}</span>
       </div>
       <div v-if="!compact && actor === entry.authorId" class="entry-actions">
         <button
