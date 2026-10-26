@@ -127,9 +127,6 @@ function eventsOn(date: string) {
 function hasEntryFrom(date: string, id: Actor) {
   return state.entries.some((e) => e.date === date && e.authorId === id);
 }
-function profileName(id: Actor) {
-  return state.profiles.find((p) => p.id === id)?.nickname ?? id;
-}
 function entryNote(date: string) {
   const names = state.profiles
     .filter((p) => hasEntryFrom(date, p.id))
@@ -287,8 +284,9 @@ function keyboard(e: KeyboardEvent, date: string) {
         </div>
       </div>
       <footer class="calendar-legend">
-        <span><i class="entry-dot her" />{{ profileName("her") }}的记录</span>
-        <span><i class="entry-dot him" />{{ profileName("him") }}的记录</span>
+        <span
+          ><i class="entry-dot her" /><i class="entry-dot him" />有记录</span
+        >
         <span><Heart :size="12" />重要日子</span>
         <span><Cake :size="12" />生日</span>
         <span>不必每天写，想记时再来。</span>

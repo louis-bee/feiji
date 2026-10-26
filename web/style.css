@@ -1375,10 +1375,14 @@ button {
 }
 .entry-dot.her {
   background: var(--dot-her);
+}
+.entry-dot.her.unread {
   opacity: 0.9;
 }
 .entry-dot.him {
   background: var(--dot-him);
+}
+.entry-dot.him.unread {
   opacity: 0.7;
 }
 .selected .entry-dot.her {
