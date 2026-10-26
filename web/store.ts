@@ -18,7 +18,19 @@ function savedActor(): Actor | null {
     return null;
   }
 }
-export const actor = ref<Actor | null>(savedActor());
+/** 与后端 `server/logging.ts` 中的 ACTOR_COOKIE 保持一致。 */
+const ACTOR_COOKIE = "feiji_actor";
+
+/** 图片、视频、静态资源等浏览器自发请求带不了自定义头，用 cookie 把身份带给后端日志。 */
+function writeActorCookie(value: Actor | null) {
+  document.cookie = value
+    ? `${ACTOR_COOKIE}=${value}; Path=/; SameSite=Lax`
+    : `${ACTOR_COOKIE}=; Path=/; SameSite=Lax; Max-Age=0`;
+}
+
+const restored = savedActor();
+writeActorCookie(restored);
+export const actor = ref<Actor | null>(restored);
 export const state = reactive<Bootstrap>({
   settings: {
     startDate: "2026-06-11",
@@ -165,11 +177,13 @@ export function refresh(): Promise<void> {
 export function enter(value: Actor) {
   actor.value = value;
   sessionStorage.setItem(SESSION_KEY, value);
+  writeActorCookie(value);
 }
 
 export function leave() {
   actor.value = null;
   sessionStorage.removeItem(SESSION_KEY);
+  writeActorCookie(null);
   state.entries = [];
   state.media = [];
   state.albums = [];
