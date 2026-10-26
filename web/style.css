@@ -1282,14 +1282,24 @@ button {
   background: #87a277;
   display: inline-block;
 }
-.selected .entry-dot {
-  background: #ebd394;
+.entry-dot.her {
+  background: #87a277;
+}
+.entry-dot.him {
+  background: #cba23f;
+}
+.selected .entry-dot.her {
+  background: #b7cc9c;
+}
+.selected .entry-dot.him {
+  background: #f0cd85;
 }
 .selected .day-marks {
   color: #ebd394;
 }
 .calendar-legend {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 15px;
   border-top: 1px solid #eceee0;
