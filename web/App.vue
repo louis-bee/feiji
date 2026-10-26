@@ -31,7 +31,9 @@ import Avatar from "./components/Avatar.vue";
 import ConfirmDialog from "./components/ConfirmDialog.vue";
 import EntryEditor from "./components/EntryEditor.vue";
 import MediaViewer from "./components/MediaViewer.vue";
-import SplashHost from "./components/SplashHost.vue";
+// 暂时没有开屏在档期：注释掉就不会把开屏代码打进包。
+// 要恢复时，放开这里和模板里的 <SplashHost /> 即可。
+// import SplashHost from "./components/SplashHost.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -92,7 +94,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <SplashHost />
+  <!-- <SplashHost /> -->
   <Transition name="shell-swap" mode="out-in">
     <RouterView v-if="route.path === '/login'" key="login" />
     <div v-else class="app-shell" key="shell">
