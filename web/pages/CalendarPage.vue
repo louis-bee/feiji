@@ -19,6 +19,7 @@ import {
   addDays,
 } from "../../shared/dates";
 import EntryCard from "../components/EntryCard.vue";
+import type { Actor } from "../../shared/types";
 const router = useRouter();
 const route = useRoute();
 const selected = ref(today.value);
@@ -91,6 +92,18 @@ function eventsOn(date: string) {
     }
   }
   return result;
+}
+function hasEntryFrom(date: string, id: Actor) {
+  return state.entries.some((e) => e.date === date && e.authorId === id);
+}
+function profileName(id: Actor) {
+  return state.profiles.find((p) => p.id === id)?.nickname ?? id;
+}
+function entryNote(date: string) {
+  const names = state.profiles
+    .filter((p) => hasEntryFrom(date, p.id))
+    .map((p) => p.nickname);
+  return names.length ? `${names.join("、")}有记录` : "";
 }
 function selectDate(date: string, options?: { scroll?: boolean }) {
   if (!isDate(date) || date > "2099-12-31") return;
@@ -195,7 +208,7 @@ function keyboard(e: KeyboardEvent, date: string) {
                     .map((e) => e.title)
                     .join('、')
                 : ' '
-            }${state.entries.some((e) => e.date === date) ? '有记录' : ''}`"
+            }${entryNote(date)}`"
             :aria-pressed="date === today"
             @click="selectDate(date, { scroll: true })"
             @keydown="keyboard($event, date)"
@@ -203,8 +216,14 @@ function keyboard(e: KeyboardEvent, date: string) {
             <span>{{ Number(date.slice(8)) }}</span>
             <div class="day-marks">
               <i
-                v-if="state.entries.some((e) => e.date === date)"
-                class="entry-dot"
+                v-if="hasEntryFrom(date, 'her')"
+                class="entry-dot her"
+                aria-hidden="true"
+              />
+              <i
+                v-if="hasEntryFrom(date, 'him')"
+                class="entry-dot him"
+                aria-hidden="true"
               />
               <Cake
                 v-if="eventsOn(date).some((e) => e.kind === 'birthday')"
@@ -219,7 +238,8 @@ function keyboard(e: KeyboardEvent, date: string) {
         </div>
       </div>
       <footer class="calendar-legend">
-        <span><i class="entry-dot" />有记录</span>
+        <span><i class="entry-dot her" />{{ profileName("her") }}的记录</span>
+        <span><i class="entry-dot him" />{{ profileName("him") }}的记录</span>
         <span><Heart :size="12" />重要日子</span>
         <span><Cake :size="12" />生日</span>
         <span>不必每天写，想记时再来。</span>
