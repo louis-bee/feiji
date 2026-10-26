@@ -14,6 +14,12 @@
   --muted: #63705f;
   --line: #e4e4d8;
   --honey: #c7a267;
+  /* 日历上“有记录”的点，未读提示沿用同一套颜色：绿色是她，金色是他 */
+  --dot: #87a277;
+  --dot-her: #87a277;
+  --dot-him: #cba23f;
+  /* 首页的未读提示用更浅一档的金色，日历里仍用 --dot-him */
+  --dot-him-soft: #f1dfb6;
   --danger: #a2443b;
 }
 * {
@@ -898,6 +904,40 @@ button {
 .section-heading > .text-button {
   font-size: 10px;
 }
+/* 让未读圆点与 h2 文字视觉中心对齐 */
+.recent-heading {
+  display: flex;
+  align-items: center;
+}
+.unread-badges {
+  display: inline-flex;
+  align-items: center;
+}
+.unread-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--dot-her);
+  color: var(--paper);
+  opacity: 0.9;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+}
+/* 谁写的记录，就用谁的颜色：绿色是她，金色是他 */
+.unread-badge.her {
+  background: var(--dot-her);
+}
+.unread-badge.him {
+  background: var(--dot-him-soft);
+  opacity: 1;
+  color: #ffffff;
+}
 .empty-paper {
   position: relative;
   border: 1px solid #e4e3d6;
@@ -1040,11 +1080,25 @@ button {
   gap: 15px;
 }
 .entry-card {
+  position: relative;
   background: #fffdf7;
   border: 1px solid #e1e4d5;
   border-radius: 12px;
   padding: 20px;
   min-width: 0;
+}
+.entry-unread-dot {
+  position: absolute;
+  top: 20px;
+  right: 19px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dot-her);
+}
+.entry-unread-dot.him {
+  background: var(--dot-him-soft);
+  opacity: 1;
 }
 .entry-card header {
   display: flex;
@@ -1204,6 +1258,38 @@ button {
   font-size: 11px;
   padding: 0 8px;
 }
+/* 那一侧还有没看的月份：按钮底色浅一度，按记录是谁写的换色，hover 再深一档 */
+.calendar-toolbar .icon-button.unread-her,
+.calendar-toolbar .icon-button.unread-him,
+.calendar-toolbar .icon-button.unread-both {
+  background: var(--nav-tint);
+}
+.calendar-toolbar .icon-button.unread-her {
+  --nav-tint: #e6ead9;
+  --nav-tint-deep: #dde3ce;
+}
+.calendar-toolbar .icon-button.unread-him {
+  --nav-tint: #f1e6cd;
+  --nav-tint-deep: #e9d9b3;
+}
+.calendar-toolbar .icon-button.unread-both {
+  --nav-tint: linear-gradient(105deg, #e6ead9 0 50%, #f1e6cd 50% 100%);
+  --nav-tint-deep: linear-gradient(105deg, #dde3ce 0 50%, #e9d9b3 50% 100%);
+}
+@media (hover: hover) {
+  .calendar-toolbar .icon-button.unread-her:hover,
+  .calendar-toolbar .icon-button.unread-him:hover,
+  .calendar-toolbar .icon-button.unread-both:hover {
+    background: var(--nav-tint-deep);
+  }
+}
+@media (hover: none) {
+  .calendar-toolbar .icon-button.unread-her:active,
+  .calendar-toolbar .icon-button.unread-him:active,
+  .calendar-toolbar .icon-button.unread-both:active {
+    background: var(--nav-tint-deep);
+  }
+}
 .month-picker {
   font-size: 10px;
   color: #8c937f;
@@ -1276,17 +1362,24 @@ button {
   margin-top: 4px;
 }
 .entry-dot {
-  width: 5px;
-  height: 5px;
+  width: 4.5px;
+  height: 4.5px;
   border-radius: 50%;
-  background: #87a277;
+  background: var(--dot);
   display: inline-block;
 }
+/* 这条记录还没看过：同色小点放大一号 */
+.entry-dot.unread {
+  width: 6.5px;
+  height: 6.5px;
+}
 .entry-dot.her {
-  background: #87a277;
+  background: var(--dot-her);
+  opacity: 0.9;
 }
 .entry-dot.him {
-  background: #cba23f;
+  background: var(--dot-him);
+  opacity: 0.7;
 }
 .selected .entry-dot.her {
   background: #b7cc9c;

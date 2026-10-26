@@ -72,7 +72,12 @@ export function registerEntries({ app, store }: RouteContext) {
     async (request) => {
       const current = required(store.get("entries", request.params.id));
       checkVersion(current, request.query.version);
-      store.remove("entries", current.id);
+      store.db.transaction(() => {
+        store.remove("entries", current.id);
+        for (const actorId of ["her", "him"] as const) {
+          store.remove("reads", `${actorId}:${current.id}`);
+        }
+      })();
       return { ok: true };
     },
   );

@@ -11,6 +11,7 @@ import { registerBootstrap } from "./routes/bootstrap";
 import { registerEntries } from "./routes/entries";
 import { registerEvents } from "./routes/events";
 import { registerMedia } from "./routes/media";
+import { registerReads } from "./routes/reads";
 import { registerSettings } from "./routes/settings";
 import { registerUpload } from "./routes/upload";
 import { registerWebRoutes } from "./routes/web";
@@ -100,6 +101,7 @@ export function createApp(options: {
   registerBootstrap(routes);
   registerSettings(routes);
   registerEntries(routes);
+  registerReads(routes);
   registerAlbums(routes);
   registerEvents(routes);
   registerMedia(routes);

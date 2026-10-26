@@ -2,7 +2,13 @@ import { computed, reactive, ref } from "vue";
 import { api } from "./api";
 import { SESSION_KEY } from "./config";
 import { dayDiff, nextOccurrence, todayInZone } from "../shared/dates";
-import type { Actor, Bootstrap, DisplayEvent } from "../shared/types";
+import type {
+  Actor,
+  Bootstrap,
+  DisplayEvent,
+  Entry,
+  EntryRead,
+} from "../shared/types";
 
 function savedActor(): Actor | null {
   try {
@@ -29,6 +35,7 @@ export const state = reactive<Bootstrap>({
   media: [],
   albums: [],
   events: [],
+  reads: [],
 });
 export const loaded = ref(false);
 export const loading = ref(false);
@@ -55,6 +62,83 @@ export function notify(message: string) {
   noticeTimer = setTimeout(() => {
     notice.value = "";
   }, 4000);
+}
+
+/** 当前身份读到的各条记录版本 */
+const readVersions = computed(() => {
+  const versions = new Map<string, number>();
+  const me = actor.value;
+  if (!me) return versions;
+  for (const read of state.reads) {
+    if (read.actorId === me) versions.set(read.entryId, read.version);
+  }
+  return versions;
+});
+
+/** 只有对方写的记录才会对自己未读；自己新增或修改的不算 */
+export function isUnread(entry: Entry) {
+  if (!actor.value || entry.authorId === actor.value) return false;
+  return (readVersions.value.get(entry.id) ?? 0) < entry.version;
+}
+
+export const unreadEntries = computed(() => state.entries.filter(isUnread));
+const unreadKeys = computed(
+  () =>
+    new Set(unreadEntries.value.map((entry) => `${entry.authorId}:${entry.date}`)),
+);
+export function hasUnreadOn(date: string, authorId: Actor) {
+  return unreadKeys.value.has(`${authorId}:${date}`);
+}
+
+const markingDates = new Set<string>();
+/** 看过某一天（日历里选中这一天）后，清掉那一天的未读 */
+export async function markDateRead(date: string) {
+  const me = actor.value;
+  if (!me || markingDates.has(date)) return;
+  const targets = state.entries.filter((e) => e.date === date && isUnread(e));
+  if (!targets.length) return;
+  markingDates.add(date);
+  const now = new Date().toISOString();
+  // 先本地标记，避免圆点在网络往返之间闪一下
+  const optimistic = targets.map((entry) => ({
+    actorId: me,
+    entryId: entry.id,
+    version: entry.version,
+    readAt: now,
+  }));
+  state.reads.push(...optimistic);
+  try {
+    const data = await api<{ reads: EntryRead[] }>("/api/reads", "POST", {
+      actorId: me,
+      date,
+    });
+    // 用服务端结果对齐本地，同时保留还在路上的乐观标记（取较高版本）
+    const merged = new Map<string, EntryRead>();
+    for (const read of state.reads) {
+      if (read.actorId === me) merged.set(read.entryId, read);
+    }
+    for (const read of data.reads) {
+      const current = merged.get(read.entryId);
+      if (!current || current.version <= read.version) merged.set(read.entryId, read);
+    }
+    state.reads = [
+      ...state.reads.filter((read) => read.actorId !== me),
+      ...merged.values(),
+    ];
+  } catch (e) {
+    for (const row of optimistic) {
+      const index = state.reads.findIndex(
+        (read) =>
+          read.actorId === row.actorId &&
+          read.entryId === row.entryId &&
+          read.version === row.version,
+      );
+      if (index >= 0) state.reads.splice(index, 1);
+    }
+    notify((e as Error).message);
+  } finally {
+    markingDates.delete(date);
+  }
 }
 
 let pending: Promise<void> | null = null;
@@ -90,6 +174,7 @@ export function leave() {
   state.media = [];
   state.albums = [];
   state.events = [];
+  state.reads = [];
   loaded.value = false;
 }
 
