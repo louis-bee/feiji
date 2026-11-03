@@ -1087,6 +1087,22 @@ button {
   padding: 20px;
   min-width: 0;
 }
+.entry-card.compact {
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.entry-card.compact .entry-images > button,
+.entry-card.compact .entry-link {
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .entry-card.compact:hover {
+    border-color: #cdd6bc;
+    background: #fffef9;
+  }
+}
 .entry-unread-dot {
   position: absolute;
   top: 20px;
