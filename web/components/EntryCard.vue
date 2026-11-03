@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 import { Pencil, Trash2, Image as ImageIcon } from "lucide-vue-next";
 import { state, actor, notify } from "../store";
 import { confirmDialog, writeEntry, openViewer } from "../ui";
@@ -12,6 +13,7 @@ const props = defineProps<{
   entry: Entry;
   compact?: boolean;
   unread?: boolean;
+  flash?: boolean;
 }>();
 const profile = computed(() =>
   state.profiles.find((p) => p.id === props.entry.authorId),
@@ -29,6 +31,20 @@ const open = (id: string) =>
     id,
     shown.value.map((m) => m.id),
   );
+const router = useRouter();
+function onCardClick(e: MouseEvent) {
+  if (!props.compact) return;
+  if (e.defaultPrevented || e.button !== 0) return;
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const target = e.target as HTMLElement | null;
+  // 图片预览、操作按钮和底部链接自己处理点击
+  if (target?.closest("button, a, input, textarea, select")) return;
+  if (window.getSelection()?.toString()) return;
+  router.push({
+    path: "/calendar",
+    query: { date: props.entry.date, entry: props.entry.id },
+  });
+}
 const editedLabel = computed(() => {
   const date = new Date(props.entry.updatedAt);
   if (Number.isNaN(date.getTime())) return dateLabel(props.entry.date, true);
@@ -66,7 +82,11 @@ async function remove() {
 </script>
 
 <template>
-  <article :class="['entry-card', { compact }]">
+  <article
+    :class="['entry-card', { compact, flash }]"
+    :data-entry-id="entry.id"
+    @click="onCardClick"
+  >
     <span
       v-if="unread"
       :class="['entry-unread-dot', entry.authorId]"
@@ -121,6 +141,6 @@ async function remove() {
     >
       翻到这一天<span>↗</span>
     </RouterLink>
-    <P v-if="error" class="error-text" role="alert">{{ error }}</P>
+    <p v-if="error" class="error-text" role="alert">{{ error }}</p>
   </article>
 </template>

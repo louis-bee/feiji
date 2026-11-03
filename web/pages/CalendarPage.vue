@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
+import { ref, computed, watch, nextTick, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import {
   ChevronLeft,
@@ -72,6 +72,58 @@ const records = computed(() =>
     .filter((e) => e.date === selected.value)
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
 );
+// 从首页卡片点进来时，滚到那条记录并闪烁两下
+const flashId = ref("");
+let flashTimer = 0;
+let flashStartTimer = 0;
+function startFlash(id: string) {
+  window.clearTimeout(flashTimer);
+  flashId.value = id;
+  flashTimer = window.setTimeout(() => {
+    if (flashId.value === id) flashId.value = "";
+  }, 800);
+}
+async function revealEntry(id: string) {
+  await nextTick();
+  await new Promise<void>((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+  );
+  const card = document.querySelector<HTMLElement>(
+    `[data-entry-id="${CSS.escape(id)}"]`,
+  );
+  if (!card) return;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const margin = 96;
+  const rect = card.getBoundingClientRect();
+  let delay = 0;
+  if (rect.top < margin || rect.bottom > window.innerHeight - margin) {
+    window.scrollTo({
+      top: Math.max(0, rect.top + window.scrollY - margin),
+      behavior: reduced ? "auto" : "smooth",
+    });
+    // 等滚动靠近了再闪，避免提示被滚动过程吃掉
+    delay = reduced ? 0 : 400;
+  }
+  window.clearTimeout(flashStartTimer);
+  window.clearTimeout(flashTimer);
+  flashStartTimer = window.setTimeout(() => startFlash(id), delay);
+}
+watch(
+  () => route.query.entry,
+  (value) => {
+    const id = typeof value === "string" ? value : "";
+    if (!id || !records.value.some((e) => e.id === id)) {
+      flashId.value = "";
+      return;
+    }
+    void revealEntry(id);
+  },
+  { immediate: true },
+);
+onUnmounted(() => {
+  window.clearTimeout(flashTimer);
+  window.clearTimeout(flashStartTimer);
+});
 // 翻页箭头的底色提示：哪一侧还有没看的月份，按钮就亮起来，颜色跟着记录是谁写的
 function unreadRolesIn(test: (month: string) => boolean) {
   const roles = new Set<Actor>();
@@ -318,7 +370,12 @@ function keyboard(e: KeyboardEvent, date: string) {
         </span>
       </div>
       <div v-if="records.length" class="day-records">
-        <EntryCard v-for="entry in records" :key="entry.id" :entry="entry" />
+        <EntryCard
+          v-for="entry in records"
+          :key="entry.id"
+          :entry="entry"
+          :flash="entry.id === flashId"
+        />
       </div>
       <div v-else class="empty-state day-empty">
         <CalendarDays :size="35" stroke-width="1.3" />
