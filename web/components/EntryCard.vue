@@ -13,6 +13,7 @@ const props = defineProps<{
   entry: Entry;
   compact?: boolean;
   unread?: boolean;
+  flash?: boolean;
 }>();
 const profile = computed(() =>
   state.profiles.find((p) => p.id === props.entry.authorId),
@@ -39,7 +40,10 @@ function onCardClick(e: MouseEvent) {
   // 图片预览、操作按钮和底部链接自己处理点击
   if (target?.closest("button, a, input, textarea, select")) return;
   if (window.getSelection()?.toString()) return;
-  router.push(`/calendar?date=${props.entry.date}`);
+  router.push({
+    path: "/calendar",
+    query: { date: props.entry.date, entry: props.entry.id },
+  });
 }
 const editedLabel = computed(() => {
   const date = new Date(props.entry.updatedAt);
@@ -78,7 +82,11 @@ async function remove() {
 </script>
 
 <template>
-  <article :class="['entry-card', { compact }]" @click="onCardClick">
+  <article
+    :class="['entry-card', { compact, flash }]"
+    :data-entry-id="entry.id"
+    @click="onCardClick"
+  >
     <span
       v-if="unread"
       :class="['entry-unread-dot', entry.authorId]"

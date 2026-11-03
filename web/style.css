@@ -1103,6 +1103,18 @@ button {
     background: #fffef9;
   }
 }
+@keyframes entry-card-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.entry-card.flash {
+  animation: entry-card-flash 0.55s ease-in-out 1;
+}
 .entry-unread-dot {
   position: absolute;
   top: 20px;
