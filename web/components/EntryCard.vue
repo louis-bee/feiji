@@ -141,6 +141,6 @@ async function remove() {
     >
       翻到这一天<span>↗</span>
     </RouterLink>
-    <P v-if="error" class="error-text" role="alert">{{ error }}</P>
+    <p v-if="error" class="error-text" role="alert">{{ error }}</p>
   </article>
 </template>
