@@ -2291,6 +2291,10 @@ button {
   gap: 12px;
   margin-top: 6px;
 }
+.viewer-nav-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
 .viewer-footer > span {
   flex: 0 1 auto;
   max-width: 55%;
