@@ -667,7 +667,7 @@ function keyboard(e: KeyboardEvent, date: string) {
 }
 .day-records {
   display: grid;
-  gap: 15px;
+  gap: 10px;
 }
 .empty-state {
   display: flex;
@@ -758,9 +758,6 @@ function keyboard(e: KeyboardEvent, date: string) {
   }
   .day-heading {
     padding-top: 4px;
-  }
-  .day-records {
-    gap: 15px;
   }
 }
 @media (max-width: 540px) {
