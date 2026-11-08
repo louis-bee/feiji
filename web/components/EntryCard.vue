@@ -153,23 +153,59 @@ async function remove() {
   border-radius: 12px;
   padding: 20px;
   min-width: 0;
+
+  &.compact {
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      background 0.2s;
+
+    .entry-images > button,
+    .entry-link {
+      cursor: pointer;
+    }
+  }
+
+  &.flash {
+    animation: entry-card-flash 0.55s ease-in-out 1;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > div:nth-child(2) {
+      flex: 1;
+      min-width: 0;
+    }
+
+    strong {
+      font-size: 12px;
+      display: block;
+    }
+
+    span {
+      display: block;
+      font-size: 10px;
+      color: #65715f;
+      margin-top: 4px;
+    }
+  }
+
+  .icon-button {
+    width: 32px;
+    height: 32px;
+  }
 }
-.entry-card.compact {
-  cursor: pointer;
-  transition:
-    border-color 0.2s,
-    background 0.2s;
-}
-.entry-card.compact .entry-images > button,
-.entry-card.compact .entry-link {
-  cursor: pointer;
-}
+
 @media (hover: hover) {
   .entry-card.compact:hover {
     border-color: #cdd6bc;
     background: #fffef9;
   }
 }
+
 @keyframes entry-card-flash {
   0%,
   100% {
@@ -179,9 +215,7 @@ async function remove() {
     opacity: 0.35;
   }
 }
-.entry-card.flash {
-  animation: entry-card-flash 0.55s ease-in-out 1;
-}
+
 .entry-unread-dot {
   position: absolute;
   top: 20px;
@@ -190,38 +224,18 @@ async function remove() {
   height: 8px;
   border-radius: 50%;
   background: var(--dot-her);
+
+  &.him {
+    background: var(--dot-him-soft);
+    opacity: 1;
+  }
 }
-.entry-unread-dot.him {
-  background: var(--dot-him-soft);
-  opacity: 1;
-}
-.entry-card header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.entry-card header > div:nth-child(2) {
-  flex: 1;
-  min-width: 0;
-}
-.entry-card header strong {
-  font-size: 12px;
-  display: block;
-}
-.entry-card header span {
-  display: block;
-  font-size: 10px;
-  color: #65715f;
-  margin-top: 4px;
-}
+
 .entry-actions {
   display: flex;
   gap: 2px;
 }
-.entry-card .icon-button {
-  width: 32px;
-  height: 32px;
-}
+
 .entry-body {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -229,30 +243,36 @@ async function remove() {
   line-height: 1.95;
   margin-top: 16px;
   color: #4f6050;
+
+  &.clamped {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
-.entry-body.clamped {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+
 .entry-images {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-top: 15px;
+
+  > button {
+    padding: 0;
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .media-thumb {
+    aspect-ratio: 1;
+  }
+
+  &.small .media-thumb {
+    aspect-ratio: 1.3;
+  }
 }
-.entry-images > button {
-  padding: 0;
-  border-radius: 7px;
-  overflow: hidden;
-}
-.entry-images .media-thumb {
-  aspect-ratio: 1;
-}
-.entry-images.small .media-thumb {
-  aspect-ratio: 1.3;
-}
+
 .entry-link {
   display: flex;
   align-items: center;

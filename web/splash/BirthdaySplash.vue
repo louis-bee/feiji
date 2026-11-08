@@ -223,6 +223,30 @@ const confetti = [
   padding: 24px;
   overflow: hidden;
   background: var(--paper);
+
+  &.leaving .splash-inner {
+    opacity: 0;
+    transform: translateY(calc(var(--shift) - 16px)) scale(0.99);
+  }
+
+  &:not(.reduced) .splash-plane {
+    opacity: 0;
+    /* 略晚于起飞时间出现，免得飞机先在画布左上角闪一下 */
+    animation: splash-appear 0.16s 0.4s both;
+  }
+
+  &.reduced {
+    .splash-wash,
+    .splash-stars span,
+    .splash-confetti span {
+      animation: none;
+      opacity: 0;
+    }
+
+    .splash-close {
+      animation-delay: 1.2s;
+    }
+  }
 }
 .splash-wash {
   position: absolute;
@@ -236,15 +260,16 @@ const confetti = [
   position: absolute;
   inset: 0;
   pointer-events: none;
-}
-.splash-stars span {
-  position: absolute;
-  width: var(--size);
-  height: var(--size);
-  border-radius: 50%;
-  background: #d9bb85;
-  opacity: 0;
-  animation: splash-twinkle 3.4s var(--delay) ease-in-out infinite;
+
+  span {
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background: #d9bb85;
+    opacity: 0;
+    animation: splash-twinkle 3.4s var(--delay) ease-in-out infinite;
+  }
 }
 .splash-inner {
   --shift: -70px;
@@ -258,10 +283,6 @@ const confetti = [
   transition:
     opacity 0.6s ease,
     transform 0.72s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.birthday-splash.leaving .splash-inner {
-  opacity: 0;
-  transform: translateY(calc(var(--shift) - 16px)) scale(0.99);
 }
 .splash-scene {
   width: clamp(250px, 34vw, 400px);
@@ -280,11 +301,6 @@ const confetti = [
 .splash-plane {
   opacity: 1;
 }
-.birthday-splash:not(.reduced) .splash-plane {
-  opacity: 0;
-  /* 略晚于起飞时间出现，免得飞机先在画布左上角闪一下 */
-  animation: splash-appear 0.16s 0.4s both;
-}
 .splash-eyebrow {
   display: block;
   font-size: 11px;
@@ -300,12 +316,13 @@ const confetti = [
   letter-spacing: 0.05em;
   line-height: 1.4;
   color: var(--ink);
-}
-.splash-title span {
-  display: inline-block;
-  opacity: 0;
-  animation: splash-char 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: calc(1.55s + var(--i) * 0.07s);
+
+  span {
+    display: inline-block;
+    opacity: 0;
+    animation: splash-char 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(1.55s + var(--i) * 0.07s);
+  }
 }
 .splash-sub {
   margin-top: 12px;
@@ -337,25 +354,29 @@ const confetti = [
   inset: 0;
   overflow: hidden;
   pointer-events: none;
-}
-.splash-confetti span {
-  position: absolute;
-  top: -10%;
-  width: 5px;
-  height: 8px;
-  border-radius: 1.5px;
-  opacity: 0;
-  animation: splash-fall 2.9s var(--delay, 2.4s)
-    cubic-bezier(0.35, 0.55, 0.45, 1) forwards;
-}
-.splash-confetti .honey {
-  background: #d9bb85;
-}
-.splash-confetti .leaf {
-  background: #94ab99;
-}
-.splash-confetti .paper {
-  background: #e6ddc9;
+
+  span {
+    position: absolute;
+    top: -10%;
+    width: 5px;
+    height: 8px;
+    border-radius: 1.5px;
+    opacity: 0;
+    animation: splash-fall 2.9s var(--delay, 2.4s)
+      cubic-bezier(0.35, 0.55, 0.45, 1) forwards;
+  }
+
+  .honey {
+    background: #d9bb85;
+  }
+
+  .leaf {
+    background: #94ab99;
+  }
+
+  .paper {
+    background: #e6ddc9;
+  }
 }
 .splash-close {
   position: absolute;
@@ -372,15 +393,6 @@ const confetti = [
   box-shadow: 0 2px 10px #2c403b0a;
   opacity: 0;
   animation: splash-close-in 3s 3.5s linear forwards;
-}
-.birthday-splash.reduced .splash-wash,
-.birthday-splash.reduced .splash-stars span,
-.birthday-splash.reduced .splash-confetti span {
-  animation: none;
-  opacity: 0;
-}
-.birthday-splash.reduced .splash-close {
-  animation-delay: 1.2s;
 }
 @keyframes splash-fade {
   from {

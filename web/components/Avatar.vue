@@ -56,24 +56,27 @@ defineProps<{
   height: 38px;
   flex-shrink: 0;
   overflow: hidden;
-}
-.avatar.him {
-  background: #f1dfb6;
-}
-.avatar svg {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  margin: auto;
-  width: 90%;
-  height: 90%;
-}
-.avatar.large {
-  width: 67px;
-  height: 67px;
-  border-width: 3px;
-  box-shadow: 0 2px 6px #4651390b;
+
+  &.him {
+    background: #f1dfb6;
+  }
+
+  svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    width: 90%;
+    height: 90%;
+  }
+
+  &.large {
+    width: 67px;
+    height: 67px;
+    border-width: 3px;
+    box-shadow: 0 2px 6px #4651390b;
+  }
 }
 </style>

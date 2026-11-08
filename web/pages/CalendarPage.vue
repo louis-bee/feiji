@@ -424,41 +424,48 @@ function keyboard(e: KeyboardEvent, date: string) {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-}
-.calendar-toolbar h2 {
-  font-size: 20px;
-}
-.calendar-toolbar small {
-  display: block;
-  font-size: 10px;
-  color: #8e9782;
-  margin-top: 5px;
-}
-.calendar-toolbar > div:last-child {
-  display: flex;
-  align-items: center;
-}
-.calendar-toolbar .text-button {
-  font-size: 11px;
-  padding: 0 8px;
-}
-/* 那一侧还有没看的月份：按钮底色浅一度，按记录是谁写的换色，hover 再深一档 */
-.calendar-toolbar .icon-button.unread-her,
-.calendar-toolbar .icon-button.unread-him,
-.calendar-toolbar .icon-button.unread-both {
-  background: var(--nav-tint);
-}
-.calendar-toolbar .icon-button.unread-her {
-  --nav-tint: #e6ead9;
-  --nav-tint-deep: #dde3ce;
-}
-.calendar-toolbar .icon-button.unread-him {
-  --nav-tint: #f1e6cd;
-  --nav-tint-deep: #e9d9b3;
-}
-.calendar-toolbar .icon-button.unread-both {
-  --nav-tint: linear-gradient(105deg, #e6ead9 0 50%, #f1e6cd 50% 100%);
-  --nav-tint-deep: linear-gradient(105deg, #dde3ce 0 50%, #e9d9b3 50% 100%);
+
+  h2 {
+    font-size: 20px;
+  }
+
+  small {
+    display: block;
+    font-size: 10px;
+    color: #8e9782;
+    margin-top: 5px;
+  }
+
+  > div:last-child {
+    display: flex;
+    align-items: center;
+  }
+
+  .text-button {
+    font-size: 11px;
+    padding: 0 8px;
+  }
+
+  /* 那一侧还有没看的月份：按钮底色浅一度，按记录是谁写的换色，hover 再深一档 */
+  .icon-button {
+    &.unread-her,
+    &.unread-him,
+    &.unread-both {
+      background: var(--nav-tint);
+    }
+    &.unread-her {
+      --nav-tint: #e6ead9;
+      --nav-tint-deep: #dde3ce;
+    }
+    &.unread-him {
+      --nav-tint: #f1e6cd;
+      --nav-tint-deep: #e9d9b3;
+    }
+    &.unread-both {
+      --nav-tint: linear-gradient(105deg, #e6ead9 0 50%, #f1e6cd 50% 100%);
+      --nav-tint-deep: linear-gradient(105deg, #dde3ce 0 50%, #e9d9b3 50% 100%);
+    }
+  }
 }
 @media (hover: hover) {
   .calendar-toolbar .icon-button.unread-her:hover,
@@ -483,16 +490,17 @@ function keyboard(e: KeyboardEvent, date: string) {
   margin-top: 15px;
   padding-bottom: 13px;
   border-bottom: 1px solid #eeeee2;
-}
-.month-picker input {
-  width: auto;
-  background: transparent;
-  border: 0;
-  min-height: 32px;
-  padding: 4px;
-  margin: 0;
-  font-size: 11px;
-  color: #708263;
+
+  input {
+    width: auto;
+    background: transparent;
+    border: 0;
+    min-height: 32px;
+    padding: 4px;
+    margin: 0;
+    font-size: 11px;
+    color: #708263;
+  }
 }
 .week-labels {
   display: grid;
@@ -517,25 +525,29 @@ function keyboard(e: KeyboardEvent, date: string) {
   justify-content: center;
   border: 1px solid transparent;
   min-width: 0;
-}
-.calendar-cell > span {
-  font-size: 13px;
+
+  > span {
+    font-size: 13px;
+  }
+
+  &.today {
+    border-color: #b1bfa0;
+  }
+
+  &.selected {
+    background: #3a5d4d;
+    color: #fffdf5;
+    border-color: #3a5d4d;
+  }
+
+  &.outside:not(.selected) {
+    color: #bdc2b2;
+  }
 }
 @media (hover: hover) {
   .calendar-cell:hover {
     background: #edf0e4;
   }
-}
-.calendar-cell.today {
-  border-color: #b1bfa0;
-}
-.calendar-cell.selected {
-  background: #3a5d4d;
-  color: #fffdf5;
-  border-color: #3a5d4d;
-}
-.calendar-cell.outside:not(.selected) {
-  color: #bdc2b2;
 }
 .day-marks {
   height: 14px;
@@ -551,23 +563,28 @@ function keyboard(e: KeyboardEvent, date: string) {
   border-radius: 50%;
   background: var(--dot);
   display: inline-block;
-}
-/* 这条记录还没看过：同色小点放大一号 */
-.entry-dot.unread {
-  width: 6.5px;
-  height: 6.5px;
-}
-.entry-dot.her {
-  background: var(--dot-her);
-}
-.entry-dot.her.unread {
-  opacity: 0.9;
-}
-.entry-dot.him {
-  background: var(--dot-him);
-}
-.entry-dot.him.unread {
-  opacity: 0.7;
+
+  /* 这条记录还没看过：同色小点放大一号 */
+  &.unread {
+    width: 6.5px;
+    height: 6.5px;
+  }
+
+  &.her {
+    background: var(--dot-her);
+
+    &.unread {
+      opacity: 0.9;
+    }
+  }
+
+  &.him {
+    background: var(--dot-him);
+
+    &.unread {
+      opacity: 0.7;
+    }
+  }
 }
 .selected .entry-dot.her {
   background: #b7cc9c;
@@ -588,15 +605,17 @@ function keyboard(e: KeyboardEvent, date: string) {
   margin-top: 18px;
   font-size: 9px;
   color: #87947c;
-}
-.calendar-legend > span {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.calendar-legend > span:last-child {
-  margin-left: auto;
-  font-size: 8px;
+
+  > span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    &:last-child {
+      margin-left: auto;
+      font-size: 8px;
+    }
+  }
 }
 .day-panel {
   min-width: 0;
@@ -608,39 +627,43 @@ function keyboard(e: KeyboardEvent, date: string) {
   padding: 3px 0 16px;
   border-bottom: 1px solid #e0e3d4;
   margin-bottom: 18px;
-}
-.day-heading h2 {
-  font-size: 22px;
-  margin-top: 8px;
-}
-.day-heading h2 small {
-  vertical-align: middle;
-  margin-left: 12px;
-  font-size: 10px;
-  background: #e8ecd9;
-  color: #738760;
-  border-radius: 4px;
-  padding: 3px 6px;
-}
-.day-heading .eyebrow {
-  font-size: 8px;
+
+  h2 {
+    font-size: 22px;
+    margin-top: 8px;
+
+    small {
+      vertical-align: middle;
+      margin-left: 12px;
+      font-size: 10px;
+      background: #e8ecd9;
+      color: #738760;
+      border-radius: 4px;
+      padding: 3px 6px;
+    }
+  }
+
+  .eyebrow {
+    font-size: 8px;
+  }
 }
 .day-events {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 16px;
-}
-.day-events > span {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  background: #f0e9d8;
-  border: 1px solid #e8ddc5;
-  border-radius: 7px;
-  font-size: 11px;
-  color: #9b8052;
+
+  > span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #f0e9d8;
+    border: 1px solid #e8ddc5;
+    border-radius: 7px;
+    font-size: 11px;
+    color: #9b8052;
+  }
 }
 .day-records {
   display: grid;
@@ -657,16 +680,18 @@ function keyboard(e: KeyboardEvent, date: string) {
   border: 1px dashed #d8ddca;
   border-radius: 12px;
   color: #96a086;
-}
-.empty-state h3 {
-  margin-top: 20px;
-  font-size: 16px;
-  color: #607355;
-}
-.empty-state p {
-  font-size: 12px;
-  margin: 12px 0 20px;
-  line-height: 1.9;
+
+  h3 {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #607355;
+  }
+
+  p {
+    font-size: 12px;
+    margin: 12px 0 20px;
+    line-height: 1.9;
+  }
 }
 .day-empty {
   background: #f0f0e480;

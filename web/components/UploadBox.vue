@@ -162,14 +162,16 @@ onBeforeUnmount(() => {
   flex-direction: column;
   gap: 10px;
   color: #839775;
-}
-.upload-drop > span {
-  font-size: 13px;
-  color: #5b7550;
-}
-.upload-drop > small {
-  font-size: 9px;
-  color: #9ba28b;
+
+  > span {
+    font-size: 13px;
+    color: #5b7550;
+  }
+
+  > small {
+    font-size: 9px;
+    color: #9ba28b;
+  }
 }
 .upload-box > .field-hint {
   margin-top: 10px;
@@ -179,34 +181,41 @@ onBeforeUnmount(() => {
   border: 1px solid #e0e5d2;
   border-radius: 7px;
   padding: 10px;
-}
-.upload-job > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.file-name {
-  font-size: 11px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.upload-job small {
-  font-size: 10px;
-  white-space: nowrap;
-}
-.upload-job progress {
-  width: 100%;
-  height: 6px;
-  display: block;
-  margin: 9px 0;
-  appearance: none;
-  -webkit-appearance: none;
-  border: none;
-  border-radius: 999px;
-  overflow: hidden;
-  background: #e6eadb;
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  small {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  progress {
+    width: 100%;
+    height: 6px;
+    display: block;
+    margin: 9px 0;
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #e6eadb;
+  }
+
+  .text-button {
+    min-height: 26px;
+    font-size: 10px;
+  }
+
+  .error-text {
+    font-size: 11px;
+    margin-top: 5px;
+  }
 }
 .upload-job progress::-webkit-progress-bar {
   background: #e6eadb;
@@ -221,12 +230,10 @@ onBeforeUnmount(() => {
   background: var(--green);
   border-radius: 999px;
 }
-.upload-job .text-button {
-  min-height: 26px;
-  font-size: 10px;
-}
-.upload-job .error-text {
+.file-name {
   font-size: 11px;
-  margin-top: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

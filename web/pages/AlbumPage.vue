@@ -438,54 +438,60 @@ async function deleteMedia(media: Media) {
   padding: 0 0 22px;
   border-bottom: 1px solid #e1e4d6;
   margin-bottom: 26px;
+
+  > .text-button {
+    white-space: nowrap;
+  }
 }
 .filter-tabs {
   display: flex;
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-}
-.filter-tabs > button {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  border-radius: 7px;
-  padding: 10px 14px;
-  min-height: 40px;
-  font-size: 12px;
-  color: #7f8a74;
-}
-.filter-tabs > button.active {
-  background: #e1e8d6;
-  color: #46613c;
+
+  > button {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-radius: 7px;
+    padding: 10px 14px;
+    min-height: 40px;
+    font-size: 12px;
+    color: #7f8a74;
+
+    &.active {
+      background: #e1e8d6;
+      color: #46613c;
+    }
+
+    > span {
+      font-size: 10px;
+      padding: 1px 5px;
+      background: #f5f6ed;
+      border-radius: 4px;
+    }
+  }
 }
 @media (hover: hover) {
   .filter-tabs > button:hover {
     background: #eaedde;
   }
 }
-.filter-tabs > button > span {
-  font-size: 10px;
-  padding: 1px 5px;
-  background: #f5f6ed;
-  border-radius: 4px;
-}
-.album-toolbar > .text-button {
-  white-space: nowrap;
-}
 .album-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 20px;
-}
-.album-heading h2 {
-  font-size: 19px;
-}
-.album-heading p {
-  font-size: 12px;
-  color: #8a9580;
-  margin-top: 7px;
+
+  h2 {
+    font-size: 19px;
+  }
+
+  p {
+    font-size: 12px;
+    color: #8a9580;
+    margin-top: 7px;
+  }
 }
 .album-grid {
   display: grid;
@@ -526,44 +532,49 @@ async function deleteMedia(media: Media) {
   place-items: center;
   color: #879478;
   box-shadow: 0 2px 4px #29483b15;
-}
-.favorite-button.selected {
-  color: #a27447;
-  background: #fff3db;
+
+  &.selected {
+    color: #a27447;
+    background: #fff3db;
+  }
 }
 .photo-caption {
   padding: 13px 4px 1px;
-}
-.photo-caption > strong {
-  display: block;
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 500;
-}
-.photo-caption > div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  margin-top: 6px;
-}
-.photo-caption > div > span,
-.photo-caption > div > a {
-  font-size: 9px;
-  color: #65715f;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+
+  > strong {
+    display: block;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+
+  > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    margin-top: 6px;
+
+    > span,
+    > a {
+      font-size: 9px;
+      color: #65715f;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+  }
 }
 .photo-actions {
   display: flex;
   gap: 0;
-}
-.photo-actions > .icon-button {
-  width: 30px;
-  height: 32px;
+
+  > .icon-button {
+    width: 30px;
+    height: 32px;
+  }
 }
 .album-empty {
   text-align: center;
@@ -571,49 +582,55 @@ async function deleteMedia(media: Media) {
   border: 1px dashed #d7deca;
   border-radius: 14px;
   background: #eeeee52e;
+
+  .photo-stack {
+    width: 150px;
+    height: 125px;
+    margin-bottom: 35px;
+  }
+
+  h2 {
+    margin-top: 12px;
+    font-size: 23px;
+  }
+
+  p {
+    color: #65715f;
+    font-size: 13px;
+    line-height: 1.9;
+    margin: 13px 0 25px;
+  }
+
+  .eyebrow {
+    font-size: 9px;
+  }
 }
 .photo-stack {
   position: relative;
   width: 106px;
   height: 91px;
   margin: 8px auto 18px;
-}
-.photo-stack > div {
-  position: absolute;
-  inset: 0;
-  background: #fdfbf2;
-  border: 1px solid #d9decd;
-  box-shadow: 0 2px 6px #28462d09;
-  transform: rotate(-12deg);
-}
-.photo-stack > div:last-child {
-  inset: 0 5px 3px;
-  background: #e6e9dc;
-  border: 7px solid #fffdf6;
-  border-bottom-width: 18px;
-  outline: 1px solid #d9decd;
-  transform: rotate(9deg);
-  display: grid;
-  place-items: center;
-  color: #a2ad94;
-}
-.album-empty .photo-stack {
-  width: 150px;
-  height: 125px;
-  margin-bottom: 35px;
-}
-.album-empty h2 {
-  margin-top: 12px;
-  font-size: 23px;
-}
-.album-empty p {
-  color: #65715f;
-  font-size: 13px;
-  line-height: 1.9;
-  margin: 13px 0 25px;
-}
-.album-empty .eyebrow {
-  font-size: 9px;
+
+  > div {
+    position: absolute;
+    inset: 0;
+    background: #fdfbf2;
+    border: 1px solid #d9decd;
+    box-shadow: 0 2px 6px #28462d09;
+    transform: rotate(-12deg);
+
+    &:last-child {
+      inset: 0 5px 3px;
+      background: #e6e9dc;
+      border: 7px solid #fffdf6;
+      border-bottom-width: 18px;
+      outline: 1px solid #d9decd;
+      transform: rotate(9deg);
+      display: grid;
+      place-items: center;
+      color: #a2ad94;
+    }
+  }
 }
 .upload-album-select {
   margin-bottom: 20px;
@@ -622,9 +639,10 @@ async function deleteMedia(media: Media) {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-.checkbox-label > input {
-  margin: 0;
+
+  > input {
+    margin: 0;
+  }
 }
 @media (max-width: 1200px) {
   .album-grid {

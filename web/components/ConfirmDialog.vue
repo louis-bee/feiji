@@ -82,13 +82,15 @@ function finish(value: boolean) {
   background: #f4ede0;
   color: #b98a2f;
   margin-bottom: 12px;
-}
-.confirm-icon.danger {
-  background: #f7e6e2;
-  color: var(--danger);
-}
-.confirm-icon svg {
-  transform: translateY(-1.3px);
+
+  &.danger {
+    background: #f7e6e2;
+    color: var(--danger);
+  }
+
+  svg {
+    transform: translateY(-1.3px);
+  }
 }
 .confirm-message {
   font-size: 15px;
@@ -101,13 +103,14 @@ function finish(value: boolean) {
   display: flex;
   gap: 12px;
   margin-top: 18px;
-}
-.confirm-actions .button {
-  flex: 1;
-  min-width: 0;
-  min-height: 46px;
-  padding: 12px 16px;
-  font-size: 14px;
-  border-radius: 11px;
+
+  .button {
+    flex: 1;
+    min-width: 0;
+    min-height: 46px;
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 11px;
+  }
 }
 </style>

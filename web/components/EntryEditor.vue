@@ -234,9 +234,10 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 20px;
   align-items: center;
-}
-.form-row > label {
-  flex: 1;
+
+  > label {
+    flex: 1;
+  }
 }
 .author-note {
   display: flex;
@@ -251,22 +252,24 @@ onBeforeUnmount(() => {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
-}
-.selected-media > button {
-  position: relative;
-  padding: 0;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.selected-media > button > span {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 4px;
-  background: #294d3bba;
-  color: white;
-  font-size: 10px;
+
+  > button {
+    position: relative;
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+
+    > span {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 4px;
+      background: #294d3bba;
+      color: white;
+      font-size: 10px;
+    }
+  }
 }
 .library-grid {
   display: grid;
@@ -275,25 +278,28 @@ onBeforeUnmount(() => {
   max-height: 240px;
   overflow: auto;
   padding: 4px;
-}
-.library-grid > button {
-  position: relative;
-  padding: 0;
-  border-radius: 7px;
-  overflow: hidden;
-  border: 2px solid transparent;
-}
-.library-grid > button.chosen {
-  border-color: var(--green);
-}
-.library-grid > button > svg {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  background: var(--green);
-  color: white;
-  border-radius: 50%;
-  padding: 2px;
+
+  > button {
+    position: relative;
+    padding: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    border: 2px solid transparent;
+
+    &.chosen {
+      border-color: var(--green);
+    }
+
+    > svg {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: var(--green);
+      color: white;
+      border-radius: 50%;
+      padding: 2px;
+    }
+  }
 }
 @media (max-width: 760px) {
   .form-row {

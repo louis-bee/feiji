@@ -76,21 +76,24 @@ onUnmounted(() => {
   top: 0;
   background: #fcfaf3f5;
   z-index: 3;
-}
-.modal-header .eyebrow {
-  font-size: 8px;
-  margin-bottom: 4px;
-}
-.modal-header h2 {
-  font-size: 22px;
+
+  .eyebrow {
+    font-size: 8px;
+    margin-bottom: 4px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
 }
 .model-title-line {
   display: flex;
   align-items: center;
   gap: 2px;
-}
-.model-title-line h2 {
-  margin: 0;
+
+  h2 {
+    margin: 0;
+  }
 }
 .modal-body {
   padding: 25px 27px;

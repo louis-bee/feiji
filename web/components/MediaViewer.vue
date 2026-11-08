@@ -201,13 +201,14 @@ async function toggleFeatured() {
   border-radius: 10px;
   aspect-ratio: 16 / 9;
   overflow: auto;
-}
-.media-stage > img,
-.media-stage > video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  touch-action: manipulation;
+
+  > img,
+  > video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    touch-action: manipulation;
+  }
 }
 .fullscreen-viewer {
   position: fixed;
@@ -216,15 +217,16 @@ async function toggleFeatured() {
   background: #0c120e;
   cursor: zoom-out;
   overflow: hidden;
-}
-.fullscreen-viewer > img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  user-select: none;
-  touch-action: manipulation;
+
+  > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    touch-action: manipulation;
+  }
 }
 .fullscreen-close {
   position: fixed;
@@ -256,18 +258,28 @@ async function toggleFeatured() {
   justify-content: center;
   gap: 12px;
   margin-top: 6px;
+
+  > span {
+    flex: 0 1 auto;
+    max-width: 55%;
+    font-size: 12px;
+    color: #6b805c;
+    text-align: center;
+    min-width: 0;
+  }
+
+  small {
+    font-size: 10px;
+    display: block;
+    color: #9aa48d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }
 .viewer-nav-hidden {
   visibility: hidden;
   pointer-events: none;
-}
-.viewer-footer > span {
-  flex: 0 1 auto;
-  max-width: 55%;
-  font-size: 12px;
-  color: #6b805c;
-  text-align: center;
-  min-width: 0;
 }
 .viewer-favorite {
   width: 30px;
@@ -278,25 +290,19 @@ async function toggleFeatured() {
   place-items: center;
   background: transparent;
   color: #879478;
+
+  &.selected {
+    color: #a27447;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
 }
 @media (hover: hover) {
   .viewer-favorite:hover:not(:disabled) {
     background: #e9ecdf;
   }
-}
-.viewer-favorite.selected {
-  color: #a27447;
-}
-.viewer-favorite:disabled {
-  opacity: 0.5;
-}
-.viewer-footer small {
-  font-size: 10px;
-  display: block;
-  color: #9aa48d;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 @media (max-width: 760px) {
   .media-stage {
