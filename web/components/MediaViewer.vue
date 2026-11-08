@@ -16,6 +16,16 @@ const list = computed(() => {
   return scoped.length ? scoped : state.media;
 });
 const current = computed(() => state.media.find((m) => m.id === viewerId.value));
+// 是否来自记录卡片内的受限范围（此时不循环切换，到边界即隐藏对应按钮）
+const scoped = computed(() => !!viewerScope.value);
+const index = computed(() => {
+  if (!current.value) return -1;
+  return list.value.findIndex((m) => m.id === current.value!.id);
+});
+const hasPrev = computed(() => index.value > 0);
+const hasNext = computed(
+  () => index.value >= 0 && index.value < list.value.length - 1,
+);
 const fullscreen = ref(false);
 const error = ref("");
 const isTouch =
@@ -59,10 +69,11 @@ onBeforeUnmount(() => document.removeEventListener("keydown", handleKeydown));
 function move(direction: number) {
   const items = list.value;
   if (!items.length) return;
-  const index = items.findIndex((m) => m.id === viewerId.value);
-  if (index < 0) return;
-  viewerId.value =
-    items[(index + direction + items.length) % items.length]?.id || null;
+  const i = index.value;
+  if (i < 0) return;
+  const next = i + direction;
+  if (scoped.value && (next < 0 || next >= items.length)) return;
+  viewerId.value = items[(next + items.length) % items.length]?.id || null;
 }
 const toggling = ref(false);
 async function toggleFeatured() {
@@ -134,7 +145,9 @@ async function toggleFeatured() {
       <button
         type="button"
         class="icon-button"
+        :class="{ 'viewer-nav-hidden': scoped && !hasPrev }"
         aria-label="上一个瞬间"
+        :disabled="scoped && !hasPrev"
         @click="move(-1)"
       >
         <ChevronLeft />
@@ -146,7 +159,9 @@ async function toggleFeatured() {
       <button
         type="button"
         class="icon-button"
+        :class="{ 'viewer-nav-hidden': scoped && !hasNext }"
         aria-label="下一个瞬间"
+        :disabled="scoped && !hasNext"
         @click="move(1)"
       >
         <ChevronRight />
@@ -176,3 +191,149 @@ async function toggleFeatured() {
     </div>
   </Model>
 </template>
+
+<style scoped>
+.media-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #e6ebdf;
+  border-radius: 10px;
+  aspect-ratio: 16 / 9;
+  overflow: auto;
+
+  > img,
+  > video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    touch-action: manipulation;
+  }
+}
+.fullscreen-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0c120e;
+  cursor: zoom-out;
+  overflow: hidden;
+
+  > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    touch-action: manipulation;
+  }
+}
+.fullscreen-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  background: #ffffff1f;
+  color: #fff;
+}
+@media (hover: hover) {
+  .fullscreen-close:hover {
+    background: #ffffff38;
+    color: #fff;
+  }
+}
+.fullscreen-hint {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffffffa6;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.viewer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
+
+  > span {
+    flex: 0 1 auto;
+    max-width: 55%;
+    font-size: 12px;
+    color: #6b805c;
+    text-align: center;
+    min-width: 0;
+  }
+
+  small {
+    font-size: 10px;
+    display: block;
+    color: #9aa48d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+.viewer-nav-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+.viewer-favorite {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #879478;
+
+  &.selected {
+    color: #a27447;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+@media (hover: hover) {
+  .viewer-favorite:hover:not(:disabled) {
+    background: #e9ecdf;
+  }
+}
+@media (max-width: 760px) {
+  .media-stage {
+    aspect-ratio: auto;
+    min-height: 200px;
+    max-height: 65dvh;
+  }
+  .media-stage > img,
+  .media-stage > video {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 65dvh;
+  }
+}
+@media (max-width: 540px) {
+  .viewer-footer {
+    gap: 4px;
+  }
+  .media-stage > img,
+  .media-stage > video {
+    max-height: 55dvh;
+  }
+}
+@media (hover: none) {
+  .viewer-favorite:active:not(:disabled) {
+    background: #e9ecdf;
+  }
+  .fullscreen-close:active {
+    background: #ffffff38;
+    color: #fff;
+  }
+}
+</style>

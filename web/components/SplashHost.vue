@@ -81,9 +81,10 @@ onUnmounted(() => {
   overflow: hidden;
   /* 首帧就是完整画面，不做淡入，避免露出底下的页面 */
   transition: opacity 0.72s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.splash-host.leaving {
-  opacity: 0;
-  pointer-events: none;
+
+  &.leaving {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 </style>

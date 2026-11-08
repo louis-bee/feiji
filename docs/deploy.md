@@ -121,7 +121,7 @@ mkdir -p /var/www/feiji
 | 类型 | 名称 | 传到服务器的位置 | 作用 |
 | --- | --- | --- | --- |
 | 文件夹 | `server/` | `/var/www/feiji/server/` | 后端源码，`tsx` 直接运行 |
-| 文件夹 | `shared/` | `/var/www/feiji/shared/` | 日期计算与类型（`validate.ts` 运行时 import `dates.ts`） |
+| 文件夹 | `shared/` | `/var/www/feiji/shared/` | 日期计算（`dates.ts`）与类型（`types.ts`），前后端共用 |
 | 文件夹 | `dist/` | `/var/www/feiji/dist/` | 本地构建的前端产物（含 `index.html`、`config.json`、静态资源） |
 | 文件 | `package.json` | `/var/www/feiji/package.json` | 依赖清单与启动脚本 |
 | 文件 | `pnpm-lock.yaml` | `/var/www/feiji/pnpm-lock.yaml` | 锁定依赖版本，`pnpm install` 依赖它 |
@@ -130,7 +130,7 @@ mkdir -p /var/www/feiji
 
 ### 不需要上传
 
-`web/`、`public/`、`docs/`、`index.html`、`vite.config.ts`、`playwright.config.ts`、
+`web/`、`public/`、`docs/`、`index.html`、`vite.config.ts`、
 `README.md`、`.editorconfig`、`.gitignore`、`.git/`、`node_modules/`、`var/`。
 
 - `web/`、`public/`、`index.html`、`vite.config.ts` 只用于本地构建，产物已合并进 `dist/`。
@@ -181,7 +181,7 @@ curl -s http://127.0.0.1:3001/api/bootstrap | head -c 300
 | `HOST` | `127.0.0.1` | 只监听本机，由 nginx 反代，避免暴露 |
 | `PORT` | `3001` | API 与静态页共用端口 |
 | `DATA_DIR` | `/var/www/feiji/var` | 绝对路径，存放 `journal.sqlite` 与 `media/` |
-| `MAX_UPLOAD_BYTES` | `104857600`(100M) | 单个上传字节上限，与 nginx 上限保持一致 |
+| `MAX_UPLOAD_BYTES` | 可选，建议 `104857600`(100M) | 单个上传字节上限，与 nginx 上限保持一致；代码默认不设该值（受磁盘/网络/代理限制），需在 `ecosystem.config.cjs` 取消注释启用 |
 
 数据目录默认就是项目内 `var/`，与代码同目录，git/上传时都会被忽略，方便整体备份。
 若想数据与代码分离，可改成 `/var/www/feiji-data` 并确保该目录可写。

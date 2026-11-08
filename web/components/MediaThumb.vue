@@ -35,3 +35,74 @@ watch(
     </span>
   </div>
 </template>
+
+<style scoped>
+.media-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.15;
+  background: #e7ebdf;
+  overflow: hidden;
+
+  &.video-thumb {
+    background: linear-gradient(140deg, #b9c9b8, #526e5b);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .thumb-fallback {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #83947c;
+    font-size: 11px;
+  }
+
+  .video-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    color: #f9f6e9;
+    font-size: 12px;
+
+    > small {
+      font-size: 9px;
+      opacity: 0.7;
+    }
+  }
+
+  .play-circle {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid #f9f9e8aa;
+    border-radius: 50%;
+    background: #e9efdc22;
+  }
+}
+@media (max-width: 540px) {
+  .video-placeholder {
+    font-size: 10px;
+    gap: 6px;
+  }
+  .play-circle {
+    width: 37px;
+    height: 37px;
+  }
+  .video-placeholder > small {
+    font-size: 8px;
+  }
+}
+</style>

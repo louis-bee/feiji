@@ -228,3 +228,101 @@ onBeforeUnmount(() => {
     </form>
   </Model>
 </template>
+
+<style scoped>
+.form-row {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+
+  > label {
+    flex: 1;
+  }
+}
+.author-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #8b987b;
+  max-width: 45%;
+  margin-top: 23px;
+}
+.selected-media {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+
+  > button {
+    position: relative;
+    padding: 0;
+    border-radius: 8px;
+    overflow: hidden;
+
+    > span {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 4px;
+      background: #294d3bba;
+      color: white;
+      font-size: 10px;
+    }
+  }
+}
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  max-height: 240px;
+  overflow: auto;
+  padding: 4px;
+
+  > button {
+    position: relative;
+    padding: 0;
+    border-radius: 7px;
+    overflow: hidden;
+    border: 2px solid transparent;
+
+    &.chosen {
+      border-color: var(--green);
+    }
+
+    > svg {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: var(--green);
+      color: white;
+      border-radius: 50%;
+      padding: 2px;
+    }
+  }
+}
+@media (max-width: 760px) {
+  .form-row {
+    gap: 14px;
+  }
+  .author-note {
+    font-size: 10px;
+  }
+  .selected-media,
+  .library-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 540px) {
+  .form-row {
+    flex-wrap: wrap;
+  }
+  .form-row > label {
+    flex-basis: 100%;
+  }
+  .author-note {
+    margin-top: 0;
+    max-width: 100%;
+  }
+}
+</style>

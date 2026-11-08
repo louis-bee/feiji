@@ -42,3 +42,41 @@ defineProps<{
     </svg>
   </span>
 </template>
+
+<style scoped>
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #dce7de;
+  border: 2px solid #f8f7ec;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  overflow: hidden;
+
+  &.him {
+    background: #f1dfb6;
+  }
+
+  svg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    width: 90%;
+    height: 90%;
+  }
+
+  &.large {
+    width: 67px;
+    height: 67px;
+    border-width: 3px;
+    box-shadow: 0 2px 6px #4651390b;
+  }
+}
+</style>

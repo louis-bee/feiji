@@ -144,3 +144,155 @@ async function remove() {
     <p v-if="error" class="error-text" role="alert">{{ error }}</p>
   </article>
 </template>
+
+<style scoped>
+.entry-card {
+  position: relative;
+  background: #fffdf7;
+  border: 1px solid #e1e4d5;
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 0;
+
+  &.compact {
+    cursor: pointer;
+    transition:
+      border-color 0.2s,
+      background 0.2s;
+
+    .entry-images > button,
+    .entry-link {
+      cursor: pointer;
+    }
+  }
+
+  &.flash {
+    animation: entry-card-flash 0.55s ease-in-out 1;
+  }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > div:nth-child(2) {
+      flex: 1;
+      min-width: 0;
+    }
+
+    strong {
+      font-size: 12px;
+      display: block;
+    }
+
+    span {
+      display: block;
+      font-size: 10px;
+      color: #65715f;
+      margin-top: 4px;
+    }
+  }
+
+  .icon-button {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (hover: hover) {
+  .entry-card.compact:hover {
+    border-color: #cdd6bc;
+    background: #fffef9;
+  }
+}
+
+@keyframes entry-card-flash {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.entry-unread-dot {
+  position: absolute;
+  top: 20px;
+  right: 19px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dot-her);
+
+  &.him {
+    background: var(--dot-him-soft);
+    opacity: 1;
+  }
+}
+
+.entry-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.entry-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.95;
+  margin-top: 16px;
+  color: #4f6050;
+
+  &.clamped {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.entry-images {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 15px;
+
+  > button {
+    padding: 0;
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .media-thumb {
+    aspect-ratio: 1;
+  }
+
+  &.small .media-thumb {
+    aspect-ratio: 1.3;
+  }
+}
+
+.entry-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #819075;
+  margin-top: 17px;
+}
+@media (max-width: 760px) {
+  .entry-card {
+    padding: 18px;
+  }
+  .entry-body {
+    font-size: 13px;
+  }
+  .entry-images .media-thumb {
+    aspect-ratio: 1;
+  }
+  .entry-card header span {
+    font-size: 11px;
+  }
+}
+</style>
