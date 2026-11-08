@@ -175,7 +175,7 @@ const unreadLabel = computed(() =>
           >翻翻日历<ArrowRight :size="15"
         /></RouterLink>
       </div>
-      <div v-if="recent.length" class="rencent-stack">
+      <div v-if="recent.length" class="recent-stack">
         <EntryCard
           v-for="entry in recent"
           :key="entry.id"

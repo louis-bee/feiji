@@ -1077,7 +1077,7 @@ button {
 }
 .recent-stack {
   display: grid;
-  gap: 15px;
+  gap: 5px;
 }
 .entry-card {
   position: relative;
