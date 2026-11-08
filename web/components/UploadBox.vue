@@ -148,3 +148,85 @@ onBeforeUnmount(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.upload-drop {
+  width: 100%;
+  padding: 24px 15px;
+  border: 1px dashed #bccbab;
+  background: #edf1e57a;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  color: #839775;
+}
+.upload-drop > span {
+  font-size: 13px;
+  color: #5b7550;
+}
+.upload-drop > small {
+  font-size: 9px;
+  color: #9ba28b;
+}
+.upload-box > .field-hint {
+  margin-top: 10px;
+}
+.upload-job {
+  margin-top: 12px;
+  border: 1px solid #e0e5d2;
+  border-radius: 7px;
+  padding: 10px;
+}
+.upload-job > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.file-name {
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.upload-job small {
+  font-size: 10px;
+  white-space: nowrap;
+}
+.upload-job progress {
+  width: 100%;
+  height: 6px;
+  display: block;
+  margin: 9px 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e6eadb;
+}
+.upload-job progress::-webkit-progress-bar {
+  background: #e6eadb;
+  border-radius: 999px;
+}
+.upload-job progress::-webkit-progress-value {
+  background: var(--green);
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+.upload-job progress::-moz-progress-bar {
+  background: var(--green);
+  border-radius: 999px;
+}
+.upload-job .text-button {
+  min-height: 26px;
+  font-size: 10px;
+}
+.upload-job .error-text {
+  font-size: 11px;
+  margin-top: 5px;
+}
+</style>

@@ -191,3 +191,143 @@ async function toggleFeatured() {
     </div>
   </Model>
 </template>
+
+<style scoped>
+.media-stage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #e6ebdf;
+  border-radius: 10px;
+  aspect-ratio: 16 / 9;
+  overflow: auto;
+}
+.media-stage > img,
+.media-stage > video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  touch-action: manipulation;
+}
+.fullscreen-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0c120e;
+  cursor: zoom-out;
+  overflow: hidden;
+}
+.fullscreen-viewer > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+  touch-action: manipulation;
+}
+.fullscreen-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  background: #ffffff1f;
+  color: #fff;
+}
+@media (hover: hover) {
+  .fullscreen-close:hover {
+    background: #ffffff38;
+    color: #fff;
+  }
+}
+.fullscreen-hint {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffffffa6;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.viewer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.viewer-nav-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+.viewer-footer > span {
+  flex: 0 1 auto;
+  max-width: 55%;
+  font-size: 12px;
+  color: #6b805c;
+  text-align: center;
+  min-width: 0;
+}
+.viewer-favorite {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: #879478;
+}
+@media (hover: hover) {
+  .viewer-favorite:hover:not(:disabled) {
+    background: #e9ecdf;
+  }
+}
+.viewer-favorite.selected {
+  color: #a27447;
+}
+.viewer-favorite:disabled {
+  opacity: 0.5;
+}
+.viewer-footer small {
+  font-size: 10px;
+  display: block;
+  color: #9aa48d;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 760px) {
+  .media-stage {
+    aspect-ratio: auto;
+    min-height: 200px;
+    max-height: 65dvh;
+  }
+  .media-stage > img,
+  .media-stage > video {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 65dvh;
+  }
+}
+@media (max-width: 540px) {
+  .viewer-footer {
+    gap: 4px;
+  }
+  .media-stage > img,
+  .media-stage > video {
+    max-height: 55dvh;
+  }
+}
+@media (hover: none) {
+  .viewer-favorite:active:not(:disabled) {
+    background: #e9ecdf;
+  }
+  .fullscreen-close:active {
+    background: #ffffff38;
+    color: #fff;
+  }
+}
+</style>

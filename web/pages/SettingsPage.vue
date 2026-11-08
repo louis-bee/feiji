@@ -194,3 +194,127 @@ onBeforeUnmount(() => {
     </div>
   </form>
 </template>
+
+<style scoped>
+.settings-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+.settings-card {
+  background: #fffdf7;
+  border: 1px solid #e0e4d3;
+  border-radius: 13px;
+  padding: 28px;
+}
+.settings-card h2 {
+  font-size: 19px;
+  margin-bottom: 26px;
+}
+.profile-fields {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+.profile-fields + .profile-fields {
+  margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid #e8ebde;
+}
+.profile-fields > div {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+.settings-bottom {
+  grid-column: 1/-1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+.boundary-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 650px;
+  color: #65715f;
+}
+.boundary-note p {
+  font-size: 11px;
+  line-height: 1.9;
+}
+.boundary-note code {
+  font-size: 11px;
+  background: #e9ecdd;
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+.boundary-note svg {
+  margin-top: 2px;
+}
+.settings-bottom > .error-text {
+  flex-basis: 100%;
+}
+@media (max-width: 1200px) {
+  .settings-card {
+    padding: 23px;
+  }
+  .profile-fields {
+    gap: 12px;
+  }
+  .profile-fields > .avatar {
+    width: 50px;
+    height: 50px;
+  }
+}
+@media (max-width: 1000px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+  .settings-card {
+    padding: 26px;
+  }
+  .profile-fields > .avatar {
+    width: 67px;
+    height: 67px;
+  }
+  .settings-bottom {
+    justify-content: flex-end;
+  }
+}
+@media (max-width: 760px) {
+  .settings-layout {
+    gap: 20px;
+  }
+  .settings-card {
+    padding: 23px;
+  }
+  .settings-card h2 {
+    font-size: 18px;
+  }
+  .profile-fields {
+    gap: 18px;
+  }
+  .boundary-note p {
+    font-size: 10px;
+  }
+}
+@media (max-width: 540px) {
+  .settings-card {
+    padding: 21px 19px;
+  }
+  .profile-fields {
+    gap: 13px;
+  }
+  .profile-fields > .avatar {
+    width: 50px;
+    height: 50px;
+  }
+  .settings-bottom > .button {
+    width: 100%;
+  }
+}
+</style>
