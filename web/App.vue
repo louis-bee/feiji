@@ -11,12 +11,10 @@ import {
   Plus,
   LogOut,
   RefreshCw,
-  ArrowRight,
 } from "lucide-vue-next";
 import {
   actor,
   state,
-  names,
   currentProfile,
   loaded,
   loading,
@@ -203,14 +201,6 @@ onUnmounted(() => {
           </div>
           <RouterView v-else />
         </main>
-        <footer class="site-footer">
-          <span
-            >{{ names }} · 始于{{
-              state.settings.startDate.replaceAll("-", ".")
-            }}</span
-          >
-          <span>慢慢走，好好记<ArrowRight :size="12" /></span>
-        </footer>
       </div>
       <nav class="mobile-nav" aria-label="移动端导航">
         <RouterLink
