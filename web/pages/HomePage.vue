@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -9,6 +9,8 @@ import {
   Camera,
   CalendarDays,
   ImagePlus,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-vue-next";
 import {
   state,
@@ -34,11 +36,28 @@ const cover = computed(() =>
 const upcoming = computed(() =>
   displayEvents.value.filter((e) => e.days >= 0).slice(0, 2),
 );
-const recent = computed(() =>
-  [...state.entries]
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-    .slice(0, 2),
+const RECENT_PAGE = 5;
+const visibleRecent = ref(2);
+const sortedRecent = computed(() =>
+  [...state.entries].sort(
+    (a, b) =>
+      b.updatedAt.localeCompare(a.updatedAt) ||
+      b.createdAt.localeCompare(a.createdAt),
+  ),
 );
+const recent = computed(() => sortedRecent.value.slice(0, visibleRecent.value));
+const totalRecent = computed(() => sortedRecent.value.length);
+const hasMore = computed(() => visibleRecent.value < totalRecent.value);
+const expanded = computed(() => visibleRecent.value > 2);
+function loadMore() {
+  visibleRecent.value = Math.min(
+    visibleRecent.value + RECENT_PAGE,
+    totalRecent.value,
+  );
+}
+function collapse() {
+  visibleRecent.value = 2;
+}
 const featured = computed(() =>
   state.media.filter((m) => m.featured).slice(0, 4),
 );
@@ -175,15 +194,35 @@ const unreadLabel = computed(() =>
           >翻翻日历<ArrowRight :size="15"
         /></RouterLink>
       </div>
-      <div v-if="recent.length" class="recent-stack">
-        <EntryCard
-          v-for="entry in recent"
-          :key="entry.id"
-          :entry="entry"
-          :unread="isUnread(entry)"
-          compact
-        />
-      </div>
+      <template v-if="recent.length">
+        <div class="recent-stack">
+          <EntryCard
+            v-for="entry in recent"
+            :key="entry.id"
+            :entry="entry"
+            :unread="isUnread(entry)"
+            compact
+          />
+        </div>
+        <div v-if="totalRecent > 2" class="recent-toggle">
+          <button
+            v-if="hasMore"
+            type="button"
+            class="text-button recent-toggle-btn"
+            @click="loadMore"
+          >
+            再看几笔<ChevronDown :size="12" />
+          </button>
+          <button
+            v-if="expanded"
+            type="button"
+            class="text-button recent-toggle-btn recent-toggle-collapse"
+            @click="collapse"
+          >
+            收起<ChevronUp :size="12" />
+          </button>
+        </div>
+      </template>
       <div v-else class="empty-paper">
         <span class="empty-icon"><PenLine :size="26" /></span>
         <h3>每段故事，都从第一笔开始。</h3>
@@ -733,6 +772,40 @@ const unreadLabel = computed(() =>
 .recent-stack {
   display: grid;
   gap: 5px;
+}
+.recent-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.recent-toggle-btn {
+  gap: 4px;
+  font-size: 10px;
+  color: #a4ac9a;
+  min-height: 24px;
+  padding: 2px 2px;
+  text-decoration: none;
+}
+/* 「收起」绝对定位到居中的「再看几笔」右侧，不参与 flex 布局，避免把主按钮顶偏 */
+.recent-toggle-collapse {
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 2em + 22px);
+  transform: translateY(-50%);
+}
+@media (hover: hover) {
+  .recent-toggle-btn:hover {
+    color: #7e8c76;
+    text-decoration: none;
+  }
+}
+@media (max-width: 540px) {
+  .recent-toggle-btn {
+    min-height: 32px;
+    font-size: 11px;
+  }
 }
 
 @media (min-width: 1500px) {
