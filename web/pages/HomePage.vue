@@ -25,6 +25,7 @@ import Avatar from "../components/Avatar.vue";
 import JourneyArt from "../components/JourneyArt.vue";
 import EntryCard from "../components/EntryCard.vue";
 import MediaThumb from "../components/MediaThumb.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const cover = computed(() =>
   state.media.find(
@@ -61,16 +62,15 @@ const unreadLabel = computed(() =>
 </script>
 
 <template>
-  <section class="page-intro">
-    <div>
-      <span class="eyebrow">OUR LITTLE JOURNEY</span>
-      <h1>把日子，写成我们的故事</h1>
-      <p>有些瞬间很小，却值得被好好收藏。</p>
-    </div>
+  <PageHeader
+    eyebrow="OUR LITTLE JOURNEY"
+    title="把日子，写成我们的故事"
+    description="有些瞬间很小，却值得被好好收藏。"
+  >
     <button type="button" class="button primary" @click="writeEntry()">
       <PenLine :size="17" />记下今天
     </button>
-  </section>
+  </PageHeader>
   <section class="home-hero">
     <div class="together-card">
       <div class="couple-avatars">

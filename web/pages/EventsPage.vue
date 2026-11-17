@@ -15,6 +15,7 @@ import { dateLabel } from "../../shared/dates";
 import { confirmDialog, writeEntry } from "../ui";
 import type { EventItem } from "../../shared/types";
 import Modal from "../components/Model.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const upcoming = computed(() => displayEvents.value.filter((e) => e.days >= 0));
 const past = computed(() =>
@@ -108,16 +109,15 @@ async function remove(event: EventItem) {
 </script>
 
 <template>
-  <section class="page-intro">
-    <div>
-      <span class="eyebrow">DATES TO REMEMBER</span>
-      <h1>有些日子，值得期待</h1>
-      <p>生日、周年，还有只属于我们的特别一天。</p>
-    </div>
+  <PageHeader
+    eyebrow="DATES TO REMEMBER"
+    title="有些日子，值得期待"
+    description="生日、周年，还有只属于我们的特别一天。"
+  >
     <button class="button primary" @click="open()">
       <Plus :size="17" />添加纪念日
     </button>
-  </section>
+  </PageHeader>
   <section class="origin-banner">
     <span class="origin-icon"><Flag :size="26" /></span>
     <div>

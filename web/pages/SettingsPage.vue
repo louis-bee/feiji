@@ -6,6 +6,7 @@ import { state, notify } from "../store";
 import { api } from "../api";
 import { confirmDialog } from "../ui";
 import Avatar from "../components/Avatar.vue";
+import PageHeader from "../components/PageHeader.vue";
 import type { Settings, Profile } from "../../shared/types";
 
 const settings = ref({ ...state.settings });
@@ -87,13 +88,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section class="page-intro">
-    <div>
-      <span class="eyebrow">MIKE IT OURS</span>
-      <h1>我们的设置</h1>
-      <p>名字、日期，还有打开日志时看到的第一张照片。</p>
-    </div>
-  </section>
+  <PageHeader
+    eyebrow="MIKE IT OURS"
+    title="我们的设置"
+    description="名字、日期，还有打开日志时看到的第一张照片。"
+  />
   <form class="settings-layout" novalidate @submit.prevent="save">
     <section class="settings-card">
       <h2>故事的主角</h2>

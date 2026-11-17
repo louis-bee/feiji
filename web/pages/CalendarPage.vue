@@ -25,6 +25,7 @@ import {
   addDays,
 } from "../../shared/dates";
 import EntryCard from "../components/EntryCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 import type { Actor } from "../../shared/types";
 const router = useRouter();
 const route = useRoute();
@@ -176,6 +177,20 @@ function eventsOn(date: string) {
   }
   return result;
 }
+// 日历格子数量多、渲染频繁，按当前展示的月份一次性算好，避免每个格子重复遍历
+const eventsByDate = computed(() => {
+  const map = new Map<string, ReturnType<typeof eventsOn>>();
+  for (const date of cells.value) map.set(date, eventsOn(date));
+  return map;
+});
+function eventsOnCell(date: string) {
+  return eventsByDate.value.get(date) ?? [];
+}
+// 格子的读屏描述：把当天事件标题拼进 aria-label
+function eventsLabel(date: string) {
+  const list = eventsOnCell(date);
+  return list.length ? " " + list.map((e) => e.title).join("、") : " ";
+}
 function hasEntryFrom(date: string, id: Actor) {
   return state.entries.some((e) => e.date === date && e.authorId === id);
 }
@@ -231,16 +246,15 @@ function keyboard(e: KeyboardEvent, date: string) {
 </script>
 
 <template>
-  <section class="page-intro">
-    <div>
-      <span class="eyebrow">EVERYDAY, WITH YOU</span>
-      <h1>每一天，都有迹可循</h1>
-      <p>不一定发生大事，平凡的一天也值得记住。</p>
-    </div>
+  <PageHeader
+    eyebrow="EVERYDAY, WITH YOU"
+    title="每一天，都有迹可循"
+    description="不一定发生大事，平凡的一天也值得记住。"
+  >
     <button type="button" class="button primary" @click="writeEntry()">
       <PenLine :size="17" />记下今天
     </button>
-  </section>
+  </PageHeader>
   <div class="calendar-layout">
     <section class="calendar-panel">
       <div class="calendar-board">
@@ -291,14 +305,7 @@ function keyboard(e: KeyboardEvent, date: string) {
                 today: date === today,
               },
             ]"
-            :aria-label="`${date}${
-              eventsOn(date).length
-                ? ' ' +
-                  eventsOn(date)
-                    .map((e) => e.title)
-                    .join('、')
-                : ' '
-            }${entryNote(date)}${unreadNote(date)}`"
+            :aria-label="`${date}${eventsLabel(date)}${entryNote(date)}${unreadNote(date)}`"
             :aria-pressed="date === today"
             @click="selectDate(date, { scroll: true })"
             @keydown="keyboard($event, date)"
@@ -324,11 +331,11 @@ function keyboard(e: KeyboardEvent, date: string) {
                 aria-hidden="true"
               />
               <Cake
-                v-if="eventsOn(date).some((e) => e.kind === 'birthday')"
+                v-if="eventsOnCell(date).some((e) => e.kind === 'birthday')"
                 :size="12"
               />
               <Heart
-                v-if="eventsOn(date).some((e) => e.kind === 'event')"
+                v-if="eventsOnCell(date).some((e) => e.kind === 'event')"
                 :size="12"
               />
             </div>
