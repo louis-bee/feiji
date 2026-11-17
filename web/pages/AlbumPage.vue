@@ -17,6 +17,7 @@ import { Album, Media } from "../../shared/types";
 import Model from "../components/Model.vue";
 import UploadBox from "../components/UploadBox.vue";
 import MediaThumb from "../components/MediaThumb.vue";
+import PageHeader from "../components/PageHeader.vue";
 
 const filter = ref("all");
 const selectedAlbum = computed(() =>
@@ -176,16 +177,15 @@ async function deleteMedia(media: Media) {
 </script>
 
 <template>
-  <section class="page-intro">
-    <div>
-      <span class="eyebrow">LITTLE THINGS, BIG MEMORIES</span>
-      <h1>沿途的光，都收在这里</h1>
-      <p>那些不想忘记的照片，和按下录制的瞬间。</p>
-    </div>
+  <PageHeader
+    eyebrow="LITTLE THINGS, BIG MEMORIES"
+    title="沿途的光，都收在这里"
+    description="那些不想忘记的照片，和按下录制的瞬间。"
+  >
     <button class="button primary" @click="openUpload">
       <UploadCloud :size="17" />上传瞬间
     </button>
-  </section>
+  </PageHeader>
   <div class="album-toolbar">
     <div class="filter-tabs" role="group" aria-label="相册筛选">
       <button

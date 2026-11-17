@@ -25,6 +25,7 @@ import {
   addDays,
 } from "../../shared/dates";
 import EntryCard from "../components/EntryCard.vue";
+import PageHeader from "../components/PageHeader.vue";
 import type { Actor } from "../../shared/types";
 const router = useRouter();
 const route = useRoute();
@@ -231,16 +232,15 @@ function keyboard(e: KeyboardEvent, date: string) {
 </script>
 
 <template>
-  <section class="page-intro">
-    <div>
-      <span class="eyebrow">EVERYDAY, WITH YOU</span>
-      <h1>每一天，都有迹可循</h1>
-      <p>不一定发生大事，平凡的一天也值得记住。</p>
-    </div>
+  <PageHeader
+    eyebrow="EVERYDAY, WITH YOU"
+    title="每一天，都有迹可循"
+    description="不一定发生大事，平凡的一天也值得记住。"
+  >
     <button type="button" class="button primary" @click="writeEntry()">
       <PenLine :size="17" />记下今天
     </button>
-  </section>
+  </PageHeader>
   <div class="calendar-layout">
     <section class="calendar-panel">
       <div class="calendar-board">
