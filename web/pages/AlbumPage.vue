@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import {
   Plus,
   UploadCloud,
@@ -9,6 +9,7 @@ import {
   Pencil,
   Trash2,
   ArrowUpRight,
+  ArrowUpToLine,
 } from "lucide-vue-next";
 import { state, notify, today } from "../store";
 import { confirmDialog, openViewer } from "../ui";
@@ -51,6 +52,43 @@ const mediaForm = ref({
 const saving = ref(false);
 const error = ref("");
 const toggling = ref(new Set<string>());
+const showBackTop = ref(false);
+const backTopThreshold = 100;
+const topThreshold = 0;
+let lastY = window.scrollY;
+let anchor = window.scrollY;
+let hidingToTop = false;
+function onScroll() {
+  const y = window.scrollY;
+  const goingUp = y < lastY;
+  const distanceToBottom =
+    document.documentElement.scrollHeight - (y + window.innerHeight);
+  const nearBottom = distanceToBottom <= backTopThreshold;
+  if (hidingToTop) {
+    showBackTop.value = false;
+    if (y <= 0 || !goingUp) hidingToTop = false;
+  } else if (y <= topThreshold) {
+    showBackTop.value = false;
+  } else if (!goingUp) {
+    anchor = y;
+    showBackTop.value = nearBottom;
+  } else {
+    showBackTop.value = anchor - y >= backTopThreshold || nearBottom;
+  }
+  lastY = y;
+}
+function scrollToTop() {
+  showBackTop.value = false;
+  hidingToTop = true;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+onMounted(() => {
+  lastY = window.scrollY;
+  window.addEventListener("scroll", onScroll, { passive: true });
+});
+onUnmounted(() => {
+  window.removeEventListener("scroll", onScroll);
+});
 function openUpload() {
   uploadAlbum.value = selectedAlbum.value?.id ?? null;
   uploadDate.value = today.value;
@@ -427,6 +465,16 @@ async function deleteMedia(media: Media) {
       </footer>
     </form>
   </Model>
+  <Transition name="back-top">
+    <button
+      v-if="showBackTop"
+      class="back-to-top"
+      aria-label="回到顶部"
+      @click="scrollToTop"
+    >
+      <ArrowUpToLine :size="18" />
+    </button>
+  </Transition>
 </template>
 
 <style scoped>
@@ -644,6 +692,33 @@ async function deleteMedia(media: Media) {
     margin: 0;
   }
 }
+.back-to-top {
+  position: fixed;
+  right: 30px;
+  bottom: 24px;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  background: rgba(58, 58, 58, 0.72);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 14px #0000001f;
+  z-index: 40;
+}
+@media (hover: hover) {
+  .back-to-top:hover {
+    background: rgba(40, 40, 40, 0.92);
+  }
+}
+.back-top-enter-active,
+.back-top-leave-active {
+  transition: opacity 0.2s ease;
+}
+.back-top-enter-from,
+.back-top-leave-to {
+  opacity: 0;
+}
 @media (max-width: 1200px) {
   .album-grid {
     gap: 17px;
@@ -684,6 +759,9 @@ async function deleteMedia(media: Media) {
   }
   .album-heading p {
     font-size: 11px;
+  }
+  .back-to-top {
+    bottom: calc(84px + env(safe-area-inset-bottom));
   }
 }
 @media (max-width: 540px) {
